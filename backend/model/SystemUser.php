@@ -34,10 +34,25 @@ class SystemUser extends BaseModel{
         //return password as hash. Add a salt, save the salt in the config.php
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param integer $id
+     * @return SystemUser 
+     */
     public static function byId(int $id){
+         //Load System user by id from the database
+         $pdo = Context::getInstance()->getPdo();
+        $result = $pdo->query("");
          //Load a single user by id, return a System user object 
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $name
+     * @return SystemUser 
+     */
     public static function byName(string $name){
         //load a user by its username
     }
