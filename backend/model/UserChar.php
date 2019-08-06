@@ -1,5 +1,5 @@
 <?php
-class UserChar{
+class UserChar extends BaseModel{
     public $userCharId;
     public $userId;
     public $charName;

@@ -17,3 +17,4 @@
 
 $context = Context::getInstance();
 $context->setDependencies(new AppSession($_SESSION),$pdo);
+BaseModel::$context = $context;

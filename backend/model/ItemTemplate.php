@@ -1,6 +1,6 @@
 <?php
 
-class ItemTemplate{
+class ItemTemplate extends BaseModel{
     public $itemTemplateId;
     public $itemName;
     public $itemType;

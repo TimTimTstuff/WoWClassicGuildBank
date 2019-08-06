@@ -1,5 +1,5 @@
 <?php
-class NewsEntry{
+class NewsEntry extends BaseModel{
     public $newsEntryId;
     public $userId;
     public $title;
