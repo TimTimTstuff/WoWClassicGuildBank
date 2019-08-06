@@ -8,14 +8,7 @@
     include("backend/pages/main.php");
   }else{
     
-    switch($requestedApi){
-
-      case "main":
-        echo "Main";
-      break;
-        default:
-          echo "404 not found";
-    }
+   ModuleLoader::loadModul($requestedApi);
   }
 
 

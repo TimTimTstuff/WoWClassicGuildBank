@@ -5,6 +5,7 @@
     include("data/lang.php");
     include("data/session.php");
     include("context.php");
+    include("controller.php");
 //Start the backend logic here
 
 $context = Context::getInstance();
