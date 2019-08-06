@@ -49,6 +49,7 @@ var Profile;
 (function (Profile) {
     function init() {
         console.log("Start Profile JS");
+        showProfile();
     }
     Profile.init = init;
     function showChars() {
@@ -56,7 +57,15 @@ var Profile;
     }
     Profile.showChars = showChars;
     function showProfile() {
+        loadUserInfo();
         console.log("Show Profile");
     }
     Profile.showProfile = showProfile;
+    function loadUserInfo() {
+        $.get("?view=api&e=user").then(function (data) {
+            $("#username").text(data.name);
+            $("#email").text(data.email);
+            $("#regdate").text(data.registerDate.date);
+        });
+    }
 })(Profile || (Profile = {}));

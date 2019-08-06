@@ -13,4 +13,16 @@ $request = [
     "RAW"=>file_get_contents("php://input")
 ];
 
-echo json_encode($request);
+//API mock
+if($_GET['e'] == "user"){
+
+    $user = new SystemUser();
+    $user->systemUserId = 1;
+    $user->name = "Admin";
+    $user->password = "***";
+    $user->registerDate = new DateTime();
+    $user->lastLogin = new DateTime();
+    $user->role = 1;
+    $user->email = "example@example.org";
+    echo json_encode($user,JSON_PRETTY_PRINT);
+}
