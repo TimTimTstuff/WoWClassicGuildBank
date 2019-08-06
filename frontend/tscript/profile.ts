@@ -31,7 +31,7 @@ namespace Profile{
             alert("Das neu gewählte passwort stimmt nicht mit der widerholung ein!");
             return;
         }
-
+   
         $.ajax({
             url:"?view=api&e=user",
             method:"put",
