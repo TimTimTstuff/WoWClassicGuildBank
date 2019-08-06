@@ -6,6 +6,13 @@
     include("data/session.php");
     include("context.php");
     include("controller.php");
+    //model files
+    include("model/BankStorage.php");
+    include("model/ItemTemplate.php");
+    include("model/NewsEntry.php");
+    include("model/SystemUser.php");
+    include("model/Transaction.php");
+    include("model/UserChar.php");
 //Start the backend logic here
 
 $context = Context::getInstance();
