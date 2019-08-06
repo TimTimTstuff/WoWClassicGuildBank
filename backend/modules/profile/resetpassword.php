@@ -9,4 +9,7 @@
     <div class='row'>
         <label for='newpass2'>Passwort wiederholen: </label><input type="text" name="newpass2" />
     </div>
+    <div class='row'>
+        <label for=''> </label><input type="button" value='Senden' onclick="Profile.validatePassword()" />
+    </div>
 </div>

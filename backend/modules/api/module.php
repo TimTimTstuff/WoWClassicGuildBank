@@ -16,6 +16,7 @@ $request = [
 //API mock
 if($_GET['e'] == "user"){
 
+    if($_SERVER["REQUEST_METHOD"] == "GET"){
     $user = new SystemUser();
     $user->systemUserId = 1;
     $user->name = "Admin";
@@ -25,4 +26,7 @@ if($_GET['e'] == "user"){
     $user->role = 1;
     $user->email = "example@example.org";
     echo json_encode($user,JSON_PRETTY_PRINT);
+}else{
+    echo json_encode($request,JSON_PRETTY_PRINT);
+}
 }

@@ -68,4 +68,22 @@ var Profile;
             $("#regdate").text(data.registerDate.date);
         });
     }
+    function validatePassword() {
+        var oldpass = $("input[name='oldpass']").val();
+        var newpass = $("input[name='newpass']").val();
+        var newpass2 = $("input[name='newpass2']").val();
+        if (newpass != newpass2 || newpass == "") {
+            alert("Das neu gewählte passwort stimmt nicht mit der widerholung ein!");
+            return;
+        }
+        $.ajax({
+            url: "?view=api&e=user",
+            method: "put",
+            data: JSON.stringify({ old: oldpass, new: newpass, action: 'changepass' }),
+            contentType: "application/json",
+        }).then(function (data) {
+            console.log(data);
+        });
+    }
+    Profile.validatePassword = validatePassword;
 })(Profile || (Profile = {}));

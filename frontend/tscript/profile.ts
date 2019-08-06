@@ -22,8 +22,25 @@ namespace Profile{
         });
     }
 
-    function validatePassword(){
-        
+    export function validatePassword(){
+        let oldpass = $("input[name='oldpass']").val();
+        let newpass = $("input[name='newpass']").val();
+        let newpass2 = $("input[name='newpass2']").val();
+
+        if(newpass != newpass2 || newpass == ""){
+            alert("Das neu gewählte passwort stimmt nicht mit der widerholung ein!");
+            return;
+        }
+
+        $.ajax({
+            url:"?view=api&e=user",
+            method:"put",
+            data:JSON.stringify({old:oldpass, new:newpass, action:'changepass'}),
+            contentType: "application/json",
+        }).then(data=>{
+            console.log(data);
+        });
+
     }
 
 }
