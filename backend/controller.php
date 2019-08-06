@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Quick implementation of a Module loader. Just include module file from the module directory
+ */
 class ModuleLoader{
 
 

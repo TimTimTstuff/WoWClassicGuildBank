@@ -13,12 +13,11 @@ class AppSession{
         $this->setIfEmpty("logged_in",false);
         $this->setIfEmpty("username",getLang("guest"));
      
-    }
+   }
 
-
-    public function setIfEmpty(string $key, $value){
+   public function setIfEmpty(string $key, $value){
         if(!$this->hasKey($key)) $this->setValue($key,$value);
-    }
+   }
 
    public function setValue(string $key, $value){
         $this->session[$key] = $value;

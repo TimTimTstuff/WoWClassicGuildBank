@@ -2,7 +2,12 @@
 
 class Context{
 
+    private $session;
+    private $pdo;
+
     private static $self;
+
+
     /**
      * Undocumented function
      *
@@ -16,9 +21,6 @@ class Context{
         
         return self::$self;
     }
-
-    private $session;
-    private $pdo;
 
     public function setDependencies(AppSession $session, \PDO $pdo) {
         $this->session = $session;
