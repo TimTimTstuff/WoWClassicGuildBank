@@ -1,4 +1,4 @@
-<nav>
+<nav id='mainnav'>
     <h2 class='nav-head '> <i class="fas fa-piggy-bank"></i> </h2>
     <ul id='nav'>
 
@@ -36,6 +36,13 @@
         <li class='nav-item profile'>
         <a href='#profile'>    
             <i class='fas fa-user'></i><span>Profil</span>
+            </a>
+        </li>
+        <?php } ?>
+        <?php if(Context::getInstance()->getSession()->isUserLoggedIn()) { ?>
+        <li class='nav-item raid'>
+        <a href='#raid'>    
+            <i class='fas fa-gear'></i><span>Raid planer</span>
             </a>
         </li>
         <?php } ?>

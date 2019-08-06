@@ -32,7 +32,7 @@ ul#nav li.active{
 
 ul#nav li.active span{
   border-color: black;
-   
+  margin: 0;
 }
 
 
@@ -48,4 +48,34 @@ ul#nav li span{
 
 ul#nav li i{
     padding-bottom: 5px;
+}
+
+.insidenav{
+    
+    height: 25px;
+    display: block;
+    width: 100%;
+}
+
+.insidenav ul{
+    list-style: none;
+    
+}
+
+.insidenav ul li {
+    float: left;
+    border-left: solid thin rgba(255, 255, 255, 0.3);
+    color:white;
+    font-size: 12pt;
+    cursor: pointer;
+    padding: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #4e73df;
+    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15)!important;
+}
+
+.insidenav ul li:hover{
+    background-color: rgba(255, 255, 255, 0.3);
+    color:black;
 }

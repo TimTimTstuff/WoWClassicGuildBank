@@ -10,3 +10,10 @@ header h1{
     padding-top:25px;
     font-size: 22pt;
 }
+
+#content_inner h3{
+    margin-top: 23px;
+    width: 60%;
+    border-bottom: solid thin gray;
+
+}

@@ -1,6 +1,8 @@
 
 namespace Nav{
 
+    export var currentHash:string;
+
     export function initialize():void{
         $(document).ready(()=>{
             changeLocation();
@@ -19,7 +21,15 @@ namespace Nav{
         var newPage = getCurrentNavigation();
         $("li.active").removeClass("active");
         $(`.${newPage}`).addClass("active");
-        $("#content").load(`?view=${newPage}`);
+
+        if(currentHash == newPage)return;
+        currentHash = newPage;
+
+        if(newPage != "raid"){
+            $("#content").load(`?view=${newPage}`);
+        }else{
+            $("#content").html("<iframe style='width:1200px;height:800px;' src='http://localhost/raid'></iframe>");
+        }
     }
 
     function getCurrentNavigation():string{
@@ -32,6 +42,8 @@ namespace Nav{
                 return "request";
             case "#profile":
                 return "profile";
+            case "#raid":
+                return "raid";
             default:
                 return "main";
         }
