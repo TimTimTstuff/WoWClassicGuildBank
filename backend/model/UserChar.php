@@ -77,8 +77,8 @@ class UserChar extends BaseModel{
      * @param integer $count
      * @return UserChar[]
      */
-    public static function getChars(int $start, int $count){
-        $query = "SELECT * from ".self::$tableName." LIMIT ? OFFSET ?";
+    public static function getChars(int $start, int $count, string $where = null){
+        $query = "SELECT * from ".self::$tableName." ".($where!=null?"WHERE ".$where:"")." LIMIT ? OFFSET ?";
         $statement = self::$context->getPdo()->prepare($query);
 
         if($statement->execute([$count, $start])){
@@ -136,7 +136,7 @@ class UserChar extends BaseModel{
         if($statement->execute([$id])){
 
             $result = $statement->fetch();
-            if($result == null) throw new PDOException("Can't find UserChar with ID: ".$id);
+            if($result == null) return null;
             $char = new UserChar();
             $char->setDataFromArray($result);
             return $char;

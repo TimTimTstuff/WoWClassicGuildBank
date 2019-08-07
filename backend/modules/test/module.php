@@ -23,6 +23,6 @@ $obj->update();
 
 //UserChar::deleteChar(1);
 
-$obj = UserChar::getChars(0,6);
+$obj = UserChar::getChars(0,6,"charname like '%unny%'");
 
 print_r($obj);
