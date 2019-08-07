@@ -37,6 +37,8 @@ var Nav;
                 return "profile";
             case "#raid":
                 return "raid";
+            case "#login":
+                return "login";
             default:
                 return "main";
         }
@@ -45,6 +47,45 @@ var Nav;
 /// <reference path="nav.ts" />
 console.log("Start WoWGuildBankApp");
 Nav.initialize();
+var Login;
+(function (Login) {
+    function sendLogin() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        $.ajax({
+            url: "?view=api&e=user",
+            data: JSON.stringify({ action: "login", username: username, password: password }),
+            contentType: "application/json",
+            method: "post",
+        }).then(function (data) {
+            if (data.success != undefined) {
+                console.log("login");
+                window.location.href = "?";
+            }
+            else {
+                console.log("login fail");
+            }
+        });
+    }
+    Login.sendLogin = sendLogin;
+    function sendLogout() {
+        $.ajax({
+            url: "?view=api&e=user",
+            data: JSON.stringify({ action: "logout" }),
+            contentType: "application/json",
+            method: "post",
+        }).then(function (data) {
+            if (data.success != undefined) {
+                console.log("logout");
+                window.location.href = "?";
+            }
+            else {
+                console.log("logout fail");
+            }
+        });
+    }
+    Login.sendLogout = sendLogout;
+})(Login || (Login = {}));
 var Profile;
 (function (Profile) {
     function init() {

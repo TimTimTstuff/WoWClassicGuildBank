@@ -47,7 +47,21 @@
         </li>
         <?php } ?>
 
+        <?php if(!Context::getInstance()->getSession()->isUserLoggedIn()) { ?>
+        <li class='nav-item action'>
+        <a href='#login'>    
+            <i class='fas fa-user'></i><span>Login</span>
+            </a>
+        </li>
+        <?php } ?>
+        <?php if(Context::getInstance()->getSession()->isUserLoggedIn()) { ?>
+        <li class='nav-item action'>
+        <a href='#login'>    
+            <i class='fas fa-user'></i><span>Logout</span>
+            </a>
+        </li>
+        <?php } ?>
+
+
     </ul>
-    <a href='test/login.php'>Fake login</a><br>
-    <a href="test/logout.php">Fake Logout</a>
 </nav>

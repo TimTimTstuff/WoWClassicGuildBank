@@ -44,6 +44,8 @@ namespace Nav{
                 return "profile";
             case "#raid":
                 return "raid";
+            case "#login":
+                return "login";
             default:
                 return "main";
         }
