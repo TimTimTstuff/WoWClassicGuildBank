@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 ## Website
 define("PAGE_TITLE","WoW Guild Bank");
 
- ## Enviroment test
+ ## Enviroment
 define("BASE_PATH", $_SERVER['CONTEXT_DOCUMENT_ROOT'] . "/WoWClassicGuildBank/");
 define("MODULE_PATH",BASE_PATH."backend/modules/");
 
@@ -15,3 +15,4 @@ define("MODULE_PATH",BASE_PATH."backend/modules/");
 define("DB_DSN", "mysql:host=localhost;dbname=tstuff_wow;charset=utf8mb4");
 define("DB_USER", "root");
 define("DB_PASS", "");
+
