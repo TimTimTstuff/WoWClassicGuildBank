@@ -12,7 +12,7 @@ define("BASE_PATH", $_SERVER['CONTEXT_DOCUMENT_ROOT'] . "/WoWClassicGuildBank/")
 define("MODULE_PATH",BASE_PATH."backend/modules/");
 
 ## Database connection
-define("DB_DSN", "mysql:host=localhost;dbname=tstuff_game;charset=utf8mb4");
+define("DB_DSN", "mysql:host=localhost;dbname=tstuff_wow;charset=utf8mb4");
 define("DB_USER", "root");
 define("DB_PASS", "");
 

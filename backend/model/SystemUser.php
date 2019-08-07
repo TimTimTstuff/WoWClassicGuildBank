@@ -25,9 +25,11 @@ class SystemUser extends BaseModel{
     public $role;//size 2, int (security role as int (0=member, 1=better member, 2=admin...))
     //properties end
 
+    public static $tableName = "systemuser";
+
     public function __construct() {
         //set the database table name. Variable from the parent class BaseModel
-        $this->tableName = "systemuser";
+        
     }
 
     private static function getPasswordHash(){
