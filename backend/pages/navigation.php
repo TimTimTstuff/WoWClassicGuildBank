@@ -39,13 +39,7 @@
             </a>
         </li>
         <?php } ?>
-        <?php if(Context::getInstance()->getSession()->isUserLoggedIn()) { ?>
-        <li class='nav-item raid'>
-        <a href='#raid'>    
-            <i class='fas fa-gear'></i><span>Raid planer</span>
-            </a>
-        </li>
-        <?php } ?>
+       
 
         <?php if(!Context::getInstance()->getSession()->isUserLoggedIn()) { ?>
         <li class='nav-item action'>
@@ -61,7 +55,5 @@
             </a>
         </li>
         <?php } ?>
-
-
     </ul>
 </nav>

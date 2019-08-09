@@ -16,13 +16,15 @@ $char->secondProfession = "none";
 
 
 //$obj = UserChar::create($char);
-$obj = UserChar::getById(1);
+//$obj = UserChar::getById(1);
 //$obj = UserChar::getAllCharsFromUser(1);
-$obj->charName = "Funny Char";
-$obj->update();
+//$obj->charName = "Funny Char";
+//$obj->update();
 
 //UserChar::deleteChar(1);
 
-$obj = UserChar::getChars(0,6,"charname like '%unny%'");
+//$obj = UserChar::getChars(0,6,"charname like '%unny%'");
 
+$obj = ItemTemplate::get(0,200,"itemname like '%silk%'");
+//$obj = ItemTemplate::getById(1433);
 print_r($obj);

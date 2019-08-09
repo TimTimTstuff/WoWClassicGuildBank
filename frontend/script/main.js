@@ -90,16 +90,22 @@ var Profile;
 (function (Profile) {
     function init() {
         console.log("Start Profile JS");
-        showProfile();
+        $('#content_inner').ready(function () {
+            $("#char").hide();
+            $('#prof').hide();
+            Profile.showProfile();
+        });
     }
     Profile.init = init;
     function showChars() {
-        console.log("Show char view");
+        $("#char").show();
+        $('#prof').hide();
     }
     Profile.showChars = showChars;
     function showProfile() {
+        $("#char").hide();
+        $('#prof').show();
         loadUserInfo();
-        console.log("Show Profile");
     }
     Profile.showProfile = showProfile;
     function loadUserInfo() {

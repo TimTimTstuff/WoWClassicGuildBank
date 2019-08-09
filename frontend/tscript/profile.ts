@@ -2,16 +2,27 @@ namespace Profile{
 
     export function init(){
         console.log("Start Profile JS");
-        showProfile();
+      $('#content_inner').ready(()=>{
+        $("#char").hide();
+        $('#prof').hide();
+        Profile.showProfile();
+    });
     }
 
     export function showChars(){
-        console.log("Show char view");
+        $("#char").show();
+        $('#prof').hide();
+
+        $.ajax({})
+
     }
 
     export function showProfile(){
+       
+        $("#char").hide();
+        $('#prof').show();
         loadUserInfo();
-        console.log("Show Profile");
+       
     }
 
     function loadUserInfo(){
@@ -41,6 +52,36 @@ namespace Profile{
             console.log(data);
         });
 
+    }
+
+
+
+    export function getCharTemplate(charData:CharDataModel):string{
+        let template =
+        /*html*/
+        `<div data-charid='${charData.userCharId}' class='chartemplate'>
+        <div class='toprow'>
+            <div class='imgcontainer'>
+                ${charData.charRace}
+                ${charData.charClass}
+                ${charData.charRole}
+                ${charData.charRoleSup}
+            </div>
+            <div class='infocontainer'>
+                <span class='info_text'>Spieler: ${charData.userId}</span>
+                <span class='info_text'>Name: ${charData.charName}</span>
+            </div>
+        </div>
+        <div class='bottomrow'>
+        <span class='info_text'>Beruf 1: ${charData.firstProfession}</span>
+        <span class='info_text'>Beruf 2: ${charData.secondProfession}</span>
+        <span class='info_text'>Kochen: ${charData.hasCooking}</span>
+        <span class='info_text'>Fischen: ${charData.hasFishing}</span>
+        <span class='info_text'>Erste Hilfe: ${charData.hasFirstAid}</span>
+        </div>
+        </div>`;
+
+        return template;
     }
 
 }

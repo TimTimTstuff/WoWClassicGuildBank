@@ -14,6 +14,8 @@ $request = [
 ];
 include('apicontroller/UserCharCtrl.php');
 include('apicontroller/SystemUserCtrl.php');
+include('apicontroller/ItemTemplateCtrl.php');
+
 //API mock
 if($_GET['e'] == "user"){
 
@@ -28,6 +30,13 @@ if($_GET['e'] == "user"){
     unset($_GET["e"]);
     unset($_GET["view"]);
     $chctrl = new UserCharCtrl();
+    $chctrl->setRequest($_SERVER["REQUEST_METHOD"],json_decode(file_get_contents("php://input"),true),$_GET, $_POST);
+    echo json_encode($chctrl->getResponse(),JSON_PRETTY_PRINT);
+}elseif ($_GET["e"] == "item"){
+    
+    unset($_GET["e"]);
+    unset($_GET["view"]);
+    $chctrl = new ItemTemplateCtrl();
     $chctrl->setRequest($_SERVER["REQUEST_METHOD"],json_decode(file_get_contents("php://input"),true),$_GET, $_POST);
     echo json_encode($chctrl->getResponse(),JSON_PRETTY_PRINT);
 }
