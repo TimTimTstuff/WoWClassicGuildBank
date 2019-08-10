@@ -4,6 +4,7 @@
 $folder = "01_base",
           "02_web",
           "03_services",
+          "04_components",
           "09_app";
 
 #build type (tsconfig file)

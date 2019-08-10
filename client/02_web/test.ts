@@ -18,7 +18,6 @@ class SimpleCard extends HtmlComponent{
 
        let ev1 = this.registerEvent(HtmlEventTrigger.Click,0,(d)=>{
             this.numi++;
-            console.log("hehehe");
         });
 
       this.template =

@@ -101,14 +101,16 @@ abstract class HtmlComponent{
         }
     }
 
-    render(elementName:string,append:boolean = false):void{
+    render(elementName:string,append:boolean = false,appendElement?:string,styleClass?:string):void{
 
         setTimeout(()=>{
         this.build();
-       
         var el = $(elementName).first();
         if(append){
-            el.append("<div id='el_"+this.myId+"'></div>");
+            el.append(`
+            <${appendElement||"div"} class='${styleClass||""}' id='el_${this.myId}'>
+            </${appendElement||"div"}>
+            `);
             el = $("#el_"+this.myId);
         }else{
             el.attr("id","el_"+this.myId);
@@ -165,5 +167,9 @@ abstract class HtmlComponent{
             }
            
         });
+    }
+
+    public getId(){
+        return this.myId;
     }
 }
