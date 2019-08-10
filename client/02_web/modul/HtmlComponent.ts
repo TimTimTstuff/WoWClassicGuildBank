@@ -79,6 +79,7 @@ abstract class HtmlComponent{
     }
 
     abstract build():void;
+    
     protected propertyChanged(name:string){
        
         

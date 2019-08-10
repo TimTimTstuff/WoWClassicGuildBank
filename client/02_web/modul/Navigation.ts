@@ -3,22 +3,22 @@ class RouteSet{
         return this.pageName;
     }
    
-    private pageComposition:{[index:string]:HtmlComponent|HTMLElement|string} = {};
+    private pageComposition:{[index:string]:HtmlComponent|string} = {};
     private pageName:string;
 
     constructor(name:string) {
         this.pageName = name;
     }
 
-    public addSection(section:string, element:HtmlComponent | HTMLElement |string){
+    public addSection(section:string, element:HtmlComponent  |string){
         this.pageComposition[section] = element;
     }
 
-    public getRoutes():{[index:string]:HtmlComponent|HTMLElement|string}{
+    public getRoutes():{[index:string]:HtmlComponent|string}{
         return this.pageComposition;
     }
 
-    public  getRoute(rs: string): string | HtmlComponent | HTMLElement {
+    public  getRoute(rs: string): string | HtmlComponent  {
       return this.pageComposition[rs];
     }
     

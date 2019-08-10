@@ -38,11 +38,13 @@ function webTest(){
     let pc = new PageController(StaticLogger.Log());
     pc.addSection("one","one");
     pc.addSection("two","two");
+    pc.addSection("fix","fix");
     let n = new Navigation(pc,"main",StaticLogger.Log());
     allInfo = [pc,n];
     let rs = new RouteSet("main");
     rs.addSection("one",new SimpleCard());
     rs.addSection("two","<h2> Main page </h2>");
+    rs.addSection("fix",new SimpleCard());
     
     let rs2 = new RouteSet("sub");
     rs2.addSection("two",new SimpleCard());
