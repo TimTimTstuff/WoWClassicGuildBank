@@ -2,3 +2,4 @@
 **/config.php
 frontend/images
 frontend/ajaxdata.json
+dist

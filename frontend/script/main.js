@@ -1,4 +1,17 @@
 "use strict";
+/// <reference path="../../typings/jquery/dist/jquery.slim.d.ts" />
+/// <reference path="../../typings/lzstring.d.ts" />
+var Util = /** @class */ (function () {
+    function Util() {
+    }
+    Util.uuidv4 = function () {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+    return Util;
+}());
 var Nav;
 (function (Nav) {
     function initialize() {
@@ -100,6 +113,7 @@ var Profile;
     function showChars() {
         $("#char").show();
         $('#prof').hide();
+        $.ajax({});
     }
     Profile.showChars = showChars;
     function showProfile() {
@@ -133,4 +147,11 @@ var Profile;
         });
     }
     Profile.validatePassword = validatePassword;
+    function getCharTemplate(charData) {
+        var template = 
+        /*html*/
+        "<div data-charid='" + charData.userCharId + "' class='chartemplate'>\n        <div class='toprow'>\n            <div class='imgcontainer'>\n                " + charData.charRace + "\n                " + charData.charClass + "\n                " + charData.charRole + "\n                " + charData.charRoleSup + "\n            </div>\n            <div class='infocontainer'>\n                <span class='info_text'>Spieler: " + charData.userId + "</span>\n                <span class='info_text'>Name: " + charData.charName + "</span>\n            </div>\n        </div>\n        <div class='bottomrow'>\n        <span class='info_text'>Beruf 1: " + charData.firstProfession + "</span>\n        <span class='info_text'>Beruf 2: " + charData.secondProfession + "</span>\n        <span class='info_text'>Kochen: " + charData.hasCooking + "</span>\n        <span class='info_text'>Fischen: " + charData.hasFishing + "</span>\n        <span class='info_text'>Erste Hilfe: " + charData.hasFirstAid + "</span>\n        </div>\n        </div>";
+        return template;
+    }
+    Profile.getCharTemplate = getCharTemplate;
 })(Profile || (Profile = {}));
