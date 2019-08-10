@@ -1,12 +1,11 @@
 enum HtmlEventTrigger{
     None,
-    Click,
-    HoverIn,
-    HoverOut,
-    Select,
-    Change,
-    KeyDown,
-    KeyUp,
+    Click = "onclick",
+    HoverIn = "onmouseover",
+    HoverOut = "onmouseout",
+    Change = "onchange",
+    KeyDown = "onkeydown",
+    KeyUp = "onkeyup",
 
 }
 
@@ -75,22 +74,6 @@ abstract class HtmlComponent{
 
     protected getEventText(event:HtmlComponentEvent,param:string):string{
         var eventName = event.trigger;
-        /*
-        switch(event.trigger){
-            case HtmlEventTrigger.Click:
-                 eventName = "onclick";
-            case HtmlEventTrigger.Change:
-                return `onchange='HtmlComponent.emitEvent("${event.genid}","${param}")'`;
-            case HtmlEventTrigger.HoverIn:
-                return `onmouseover='HtmlComponent.emitEvent("${event.genid}","${param}")'`;
-            case HtmlEventTrigger.HoverOut:
-                return `onmouseout='HtmlComponent.emitEvent("${event.genid}","${param}")'`;
-            case HtmlEventTrigger.Select:
-                return `onselect='HtmlComponent.emitEvent("${event.genid}","${param}")'`;
-           default:
-            return "";
-        }
-        */
         return `${eventName}='HtmlComponent.emitEvent("${event.genid}","${param}")'`;
         
     }
