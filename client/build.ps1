@@ -1,4 +1,8 @@
 Write-Host "Start Build"
+$build = "";
+if($null -ne $args[0]){
+     $build = ".$($args[0])";
+}
 $folder = "01_base",
           "02_web",
           "03_services",
@@ -10,6 +14,8 @@ $location = Get-Location
 $styleFolder = "$($location.Path)\dist\style\"
 foreach ($item in $folder) {
      
+     
+          Copy-Item "$($item)\tsconfig$($build).json" -Destination "$($item)\tsconfig.json"
      $buildFolder = "$($location.Path)\${$tsFilesFolder}\$($item)" 
      $localStyleFolder = "$($buildFolder)\style"
      
