@@ -1,0 +1,21 @@
+nav ul .t-navigation{
+    display: block;
+    height: 30px;
+}
+
+.t-navigation .t-navitem{
+    float: left;
+    list-style: none;
+    padding-top: 15px;
+    padding-right: 15px;
+}
+
+.t-navitem a{
+    text-decoration: none;
+    color:#ffd100;
+    font-weight: 500;
+}
+
+.t-navitem a:hover{
+    color:#ffee00;
+}

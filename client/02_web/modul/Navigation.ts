@@ -5,11 +5,18 @@ class RouteSet{
     private navigationName:string | undefined;
     private parentNavigation:string | undefined;
     private navigationIndex:number;
+    public isVisible:()=>boolean = ()=>{return true};
+
     constructor(name:string, navName?:string, navParent?:string|RouteSet, navIndex?:number) {
         this.pageName = name;
         this.navigationName = navName;
         this.setParent(navParent);
         this.navigationIndex = navIndex||100;
+    }
+
+    public setIsVisibleCheck(check:()=>boolean):RouteSet{
+        this.isVisible = check;
+        return this;
     }
 
     public getName():string {
@@ -28,6 +35,8 @@ class RouteSet{
         return this.navigationIndex;
     }
 
+    
+
     public hasParent(name:string|undefined|RouteSet):boolean{
         if(name instanceof RouteSet){ 
             return this.parentNavigation == name.getName();
@@ -44,8 +53,9 @@ class RouteSet{
         }
     }
 
-    public addSection(section:string, element:HtmlComponent  |string){
+    public addSection(section:string, element:HtmlComponent  |string):RouteSet{
         this.pageComposition[section] = element;
+        return this;
     }
 
     public getRoutes():{[index:string]:HtmlComponent|string}{
@@ -60,24 +70,29 @@ class RouteSet{
 
 
 class Navigation{
-  
- 
+
     private pages:{[index:string]:RouteSet} = {};
     private currentLocation:string;
     private pageCtrl: PageController;
     private defaultRoute?: string;
     private log: ILogger;
 
+    private preNavigationEvents:((pre:string,post:string)=>void)[] = [];
+    private postNavigationEvents:((pre:string,post:string)=>void)[] = []
 
-    /**
-     *
-     */
     constructor(pageCtrl:PageController,defaultRoute:string, log:ILogger) {
         this.log = log;
         this.pageCtrl = pageCtrl;
         this.defaultRoute = defaultRoute;
-        this.currentLocation = "-";
-        
+        this.currentLocation = "-"; 
+    }
+
+    public addNavigationEvent(event:(pre:string,post:string)=>void,isPre = true){
+        if(isPre){
+            this.preNavigationEvents.push(event);
+        }else{
+            this.postNavigationEvents.push(event);
+        }
     }
 
     public registerRoute(routeSet:RouteSet | RouteSet[]){
@@ -91,7 +106,6 @@ class Navigation{
         }
        
     }
-
 
     public getPages():RouteSet[]{
         let routeSet: RouteSet[] = [];
@@ -112,15 +126,26 @@ class Navigation{
 
     public onNavigate(){
         this.log.info("Call onNavigate","navigation");
+       
         let nextRoute = this.defaultRoute||"";
         if(this.pages[this.getUrlLocation()] !== undefined){
             nextRoute = this.getUrlLocation();
         }
 
        if(nextRoute == this.currentLocation) return;
-       this.log.info(`Navigate to ${nextRoute}` ,"navigation");
+      
+       this.preNavigationEvents.forEach(pe=>{
+        pe(this.currentLocation,nextRoute);
+        });
+       
+        this.log.info(`Navigate to ${nextRoute}` ,"navigation");
        this.currentLocation = nextRoute;
        this.pageCtrl.setPage(this.pages[this.currentLocation]);
+       
+       this.postNavigationEvents.forEach(pe=>{
+           this.log.debug("do post naivgation event","navigation");
+            pe(this.currentLocation,nextRoute);
+        });
     }
 
     private getUrlLocation(): string {

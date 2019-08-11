@@ -1,11 +1,11 @@
 function compTest(){
    
     StaticLogger.getLoggerFactory().setLogLevel(LogLevel.Trace);
-    StaticLogger.getLoggerFactory().deactivateGroup("navigation");
+  
     let pc = new PageController(StaticLogger.Log());
-    pc.addSection("one","one");
-    pc.addSection("two","two");
-    pc.addSection("fix","fix");
+    pc.addSection("one","#one");
+    pc.addSection("two","#two");
+    pc.addSection("fix","#fix");
 
     let n = new Navigation(pc,"main",StaticLogger.Log());
     allInfo = [pc,n];
@@ -30,9 +30,14 @@ function compTest(){
     n.registerRoute([rs,rs2,rs3,rs4]);
     
     
-    pc.loadHtmlComponentInSection("fix",new NavigationCard(n));
-    n.onNavigate();
+    pc.loadHtmlComponentInSection("fix",new NavigationCard(n,StaticLogger.Log()));
+
+    setTimeout(() => {
+        n.onNavigate();    
+    }, 250);
+    
     window.onhashchange = ()=>{
+       
         n.onNavigate();
     }
 

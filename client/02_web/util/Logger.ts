@@ -105,7 +105,7 @@ class LoggerFactory implements ILogger {
           
             if(this._logger[l][LoggerRegister.Level] < this._logLevel || this._removedGroups.indexOf(group)>=0)continue;
           
-            msg = [group,data];
+            msg = `${group.toUpperCase()}: ${msg}`;
 
             switch (t) {
                 case LogLevel.Trace:

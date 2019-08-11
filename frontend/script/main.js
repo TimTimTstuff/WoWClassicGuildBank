@@ -223,14 +223,49 @@ function webTest() {
         n.onNavigate();
     };
 }
+var GlobalEvents = /** @class */ (function () {
+    function GlobalEvents() {
+        this.events = {};
+        GlobalEvents.instance = this;
+        this.logger = StaticLogger.Log();
+    }
+    GlobalEvents.getInstance = function () {
+        return GlobalEvents.instance;
+    };
+    GlobalEvents.addEvent = function (name, event) {
+        GlobalEvents.instance.addNewEvent(name, event);
+    };
+    GlobalEvents.triggerEvent = function (name, args) {
+        GlobalEvents.instance.triggerNewEvents(name, args);
+    };
+    GlobalEvents.prototype.triggerNewEvents = function (name, args) {
+        this.logger.trace("Trigger global event: " + name, "global event");
+        if (this.events[name] != undefined) {
+            this.events[name].forEach(function (e) { e(args); });
+        }
+    };
+    GlobalEvents.prototype.addNewEvent = function (name, event) {
+        this.logger.trace("Add global event: " + name, "global event");
+        if (this.events[name] == undefined) {
+            this.events[name] = [];
+        }
+        this.events[name].push(event);
+    };
+    return GlobalEvents;
+}());
 var RouteSet = /** @class */ (function () {
     function RouteSet(name, navName, navParent, navIndex) {
         this.pageComposition = {};
+        this.isVisible = function () { return true; };
         this.pageName = name;
         this.navigationName = navName;
-        this.setParent(navParent || "NotSet");
+        this.setParent(navParent);
         this.navigationIndex = navIndex || 100;
     }
+    RouteSet.prototype.setIsVisibleCheck = function (check) {
+        this.isVisible = check;
+        return this;
+    };
     RouteSet.prototype.getName = function () {
         return this.pageName;
     };
@@ -256,7 +291,12 @@ var RouteSet = /** @class */ (function () {
         configurable: true
     });
     RouteSet.prototype.hasParent = function (name) {
-        return this.parentNavigation == (name instanceof RouteSet ? name.getName() : name);
+        if (name instanceof RouteSet) {
+            return this.parentNavigation == name.getName();
+        }
+        else {
+            return this.parentNavigation == name;
+        }
     };
     RouteSet.prototype.setParent = function (parent) {
         if (parent instanceof RouteSet) {
@@ -268,6 +308,7 @@ var RouteSet = /** @class */ (function () {
     };
     RouteSet.prototype.addSection = function (section, element) {
         this.pageComposition[section] = element;
+        return this;
     };
     RouteSet.prototype.getRoutes = function () {
         return this.pageComposition;
@@ -278,20 +319,28 @@ var RouteSet = /** @class */ (function () {
     return RouteSet;
 }());
 var Navigation = /** @class */ (function () {
-    /**
-     *
-     */
     function Navigation(pageCtrl, defaultRoute, log) {
         this.pages = {};
+        this.preNavigationEvents = [];
+        this.postNavigationEvents = [];
         this.log = log;
         this.pageCtrl = pageCtrl;
         this.defaultRoute = defaultRoute;
         this.currentLocation = "-";
     }
+    Navigation.prototype.addNavigationEvent = function (event, isPre) {
+        if (isPre === void 0) { isPre = true; }
+        if (isPre) {
+            this.preNavigationEvents.push(event);
+        }
+        else {
+            this.postNavigationEvents.push(event);
+        }
+    };
     Navigation.prototype.registerRoute = function (routeSet) {
         var _this = this;
         if (routeSet instanceof RouteSet) {
-            if (this.defaultRoute === undefined)
+            if (this.defaultRoute == undefined)
                 this.defaultRoute = routeSet.getName();
             this.pages[routeSet.getName()] = routeSet;
         }
@@ -319,6 +368,7 @@ var Navigation = /** @class */ (function () {
         return routeSet;
     };
     Navigation.prototype.onNavigate = function () {
+        var _this = this;
         this.log.info("Call onNavigate", "navigation");
         var nextRoute = this.defaultRoute || "";
         if (this.pages[this.getUrlLocation()] !== undefined) {
@@ -326,9 +376,16 @@ var Navigation = /** @class */ (function () {
         }
         if (nextRoute == this.currentLocation)
             return;
+        this.preNavigationEvents.forEach(function (pe) {
+            pe(_this.currentLocation, nextRoute);
+        });
         this.log.info("Navigate to " + nextRoute, "navigation");
         this.currentLocation = nextRoute;
         this.pageCtrl.setPage(this.pages[this.currentLocation]);
+        this.postNavigationEvents.forEach(function (pe) {
+            _this.log.debug("do post naivgation event", "navigation");
+            pe(_this.currentLocation, nextRoute);
+        });
     };
     Navigation.prototype.getUrlLocation = function () {
         return window.location.hash.replace("#", "");
@@ -336,9 +393,6 @@ var Navigation = /** @class */ (function () {
     return Navigation;
 }());
 var PageController = /** @class */ (function () {
-    /**
-     *
-     */
     function PageController(logger) {
         this.pageSections = {};
         this.activeComponents = {};
@@ -355,10 +409,10 @@ var PageController = /** @class */ (function () {
         this.clearSection(sectionName);
         if (component instanceof HtmlComponent) {
             this.activeComponents[sectionName] = component;
-            component.render("#" + this.pageSections[sectionName], true);
+            component.render(this.pageSections[sectionName], true);
         }
         else {
-            $("#" + this.pageSections[sectionName]).html(component);
+            $(this.pageSections[sectionName]).html(component);
         }
     };
     PageController.prototype.clearSection = function (sectionName) {
@@ -366,7 +420,7 @@ var PageController = /** @class */ (function () {
             this.activeComponents[sectionName].remove();
             delete this.activeComponents[sectionName];
         }
-        $("#" + this.pageSections[sectionName]).html("");
+        $("" + this.pageSections[sectionName]).html("");
     };
     PageController.prototype.setPage = function (routeSet) {
         var _this = this;
@@ -582,7 +636,7 @@ var LoggerFactory = /** @class */ (function () {
         for (var l in this._logger) {
             if (this._logger[l][LoggerRegister.Level] < this._logLevel || this._removedGroups.indexOf(group) >= 0)
                 continue;
-            msg = [group, data];
+            msg = group.toUpperCase() + ": " + msg;
             switch (t) {
                 case LogLevel.Trace:
                     this._logger[l][LoggerRegister.Logger].trace(msg);
@@ -649,11 +703,10 @@ var DefaultLogger = /** @class */ (function () {
 /// <reference path="../../dist/lib/service.lib.d.ts" />
 function compTest() {
     StaticLogger.getLoggerFactory().setLogLevel(LogLevel.Trace);
-    StaticLogger.getLoggerFactory().deactivateGroup("navigation");
     var pc = new PageController(StaticLogger.Log());
-    pc.addSection("one", "one");
-    pc.addSection("two", "two");
-    pc.addSection("fix", "fix");
+    pc.addSection("one", "#one");
+    pc.addSection("two", "#two");
+    pc.addSection("fix", "#fix");
     var n = new Navigation(pc, "main", StaticLogger.Log());
     allInfo = [pc, n];
     var rs = new RouteSet("main", "Home", null, 0);
@@ -669,8 +722,10 @@ function compTest() {
     rs4.addSection("two", new SimpleCard());
     rs4.addSection("one", "<h2> Sub pop </h2>");
     n.registerRoute([rs, rs2, rs3, rs4]);
-    pc.loadHtmlComponentInSection("fix", new NavigationCard(n));
-    n.onNavigate();
+    pc.loadHtmlComponentInSection("fix", new NavigationCard(n, StaticLogger.Log()));
+    setTimeout(function () {
+        n.onNavigate();
+    }, 250);
     window.onhashchange = function () {
         n.onNavigate();
     };
@@ -680,17 +735,42 @@ var NavigationCard = /** @class */ (function (_super) {
     /**
      *
      */
-    function NavigationCard(nav) {
+    function NavigationCard(nav, log) {
         var _this = _super.call(this) || this;
         _this.navigationItems = [];
+        _this.log = log;
         _this.nav = nav;
         return _this;
     }
+    NavigationCard.prototype.setActive = function (name) {
+        var _this = this;
+        this.navigationItems.forEach(function (n) {
+            _this.log.debug("Call navigate for: " + n.getName());
+            n.setActive(n.getName() == name);
+        });
+    };
+    NavigationCard.prototype.update = function () {
+        this.navigationItems.forEach(function (a) {
+            a.update();
+        });
+    };
+    NavigationCard.prototype.buildNavItems = function () {
+        var _this = this;
+        this.nav.addNavigationEvent(function (pre, post) {
+            _this.setActive(post);
+        }, false);
+        this.nav.getPagesByParent(null)
+            .sort(function (a, b) { return a.navIndex - b.navIndex; })
+            .forEach(function (nav) {
+            _this.navigationItems.push(new NavigationItemCard(nav));
+        });
+    };
     NavigationCard.prototype.build = function () {
         var _this = this;
+        this.buildNavItems();
         this.postRender = function () {
-            _this.nav.getPagesByParent(null).sort(function (a, b) { return b.navIndex - a.navIndex; }).forEach(function (nav) {
-                new NavigationItemCard(nav).render("#nav" + _this.getId(), true, "li", "t-navitem");
+            _this.navigationItems.forEach(function (n) {
+                n.render("#nav" + _this.getId(), true, "li", "t-navitem");
             });
         };
         this.template =
@@ -701,21 +781,100 @@ var NavigationCard = /** @class */ (function (_super) {
 }(HtmlComponent));
 var NavigationItemCard = /** @class */ (function (_super) {
     __extends(NavigationItemCard, _super);
-    /**
-     *
-     */
     function NavigationItemCard(routeElement) {
         var _this = _super.call(this) || this;
         _this.rs = routeElement;
         return _this;
     }
+    NavigationItemCard.prototype.setActive = function (isActive) {
+        if (isActive) {
+            this.myElement.addClass("active");
+        }
+        else {
+            this.myElement.removeClass("active");
+        }
+        this.update();
+    };
+    NavigationItemCard.prototype.update = function () {
+        if (this.rs.isVisible()) {
+            this.myElement.show();
+        }
+        else {
+            this.myElement.hide();
+        }
+    };
+    NavigationItemCard.prototype.getName = function () {
+        return this.rs.getName();
+    };
     NavigationItemCard.prototype.build = function () {
+        var _this = this;
+        this.postRender = function () { _this.update(); };
         this.template =
             /*html*/
-            "<a href=\"" + this.rs.navTarget + "\">" + this.rs.navName + "</a>";
+            "<a href=\"" + this.rs.navTarget + "\" >" + this.rs.navName + "</a>";
     };
     return NavigationItemCard;
 }(HtmlComponent));
+/// <reference path="../../dist/lib/config.lib.d.ts" />
+/// <reference path="../../dist/lib/webhelper.lib.d.ts" />
+/// <reference path="../../dist/lib/service.lib.d.ts" />
+/// <reference path="../../dist/lib/components.lib.d.ts" />
+var BankApp = /** @class */ (function () {
+    function BankApp() {
+        var loggerSetup = StaticLogger.getLoggerFactory();
+        loggerSetup.setLogLevel(LogLevel.Trace);
+        this.sessionStorage = new Dictionary();
+        this.logger = StaticLogger.Log();
+        this.pageController = new PageController(this.logger);
+        this.mainNavigation = new Navigation(this.pageController, "main", this.logger);
+        this.navCard = new NavigationCard(this.mainNavigation, this.logger);
+        this.setupPageSections();
+        this.setupMainNavigation();
+        this.setupGlobalEvents();
+    }
+    BankApp.prototype.start = function () {
+        this.sessionStorage.setValue("login", false);
+        this.pageController.loadHtmlComponentInSection("nav", this.navCard);
+        this.pageController.loadHtmlComponentInSection("head", "<h1> Wow Guild Bank </h1>");
+        this.mainNavigation.onNavigate();
+    };
+    BankApp.prototype.setupMainNavigation = function () {
+        var _this = this;
+        this.mainNavigation.registerRoute([
+            new RouteSet("main", "Home", null, 10)
+                .addSection("content", "<h2>Home</h2>")
+                .setIsVisibleCheck(function () { return _this.sessionStorage.getValue("login"); }),
+            new RouteSet("bank", "Bank", null, 20)
+                .addSection("content", "<h2>Bank</h2>"),
+            new RouteSet("profile", "Profile", null, 30)
+                .addSection("content", "<h2>Profile</h2>"),
+            new RouteSet("char", "Chars", null, 40)
+                .addSection("content", "<h2>Chars</h2>"),
+            new RouteSet("login", "Login", null, 50)
+                .addSection("content", "<h2>Login</h2>"),
+        ]);
+    };
+    BankApp.prototype.setupPageSections = function () {
+        this.pageController.addSection("head", "header");
+        this.pageController.addSection("nav", "nav");
+        this.pageController.addSection("content", "content");
+        this.pageController.addSection("footer", "footer");
+    };
+    BankApp.prototype.setupGlobalEvents = function () {
+        var _this = this;
+        GlobalEvents.addEvent("update_nav", function () { _this.navCard.update(); });
+        window.onhashchange = function () {
+            _this.mainNavigation.onNavigate();
+        };
+    };
+    return BankApp;
+}());
+/// <reference path="view/BankApp.ts" />
+var app;
+$(document).ready(function () {
+    app = new BankApp();
+    app.start();
+});
 var Nav;
 (function (Nav) {
     function initialize() {

@@ -1,7 +1,8 @@
 ### configuration ###
 
 #build included folders
-$folder = "01_base",
+$folder = 
+          "01_base",
           "02_web",
           "03_services",
           "04_components",
@@ -10,7 +11,7 @@ $folder = "01_base",
 #build type (tsconfig file)
 $defaultBuild = ".dev";    
 #folder with style files   
-$styleFolder = "dist\style\"
+$styleFolder = "..\dist\style\"
 
 
 
@@ -22,14 +23,14 @@ if($null -ne $args[0]){
      $build = ".$($args[0])";
 }
 $location = Get-Location;
-$styleFolder = "$($location.Path)\$($styleFolder)";
+
 foreach ($item in $folder) {
      
       #prepare folder
       $buildFolder = "$($location.Path)\$($item)" 
       
 
-      $localStyleFolder = "$($buildFolder)\style"
+      $localStyleFolder = "$($location.Path)\$($item)\style"
       
 
      #copy tsconfig file
@@ -45,6 +46,12 @@ foreach ($item in $folder) {
      if(Test-Path $localStyleFolder){
           Write-Host "Has Style Path"
           Copy-Item "$($localStyleFolder)\*" -Destination $styleFolder -Recurse 
+     }
+
+      #copy main html
+      if(Test-Path "$($location.Path)/$($item)/main.html"){
+          Write-Host "Has main html"
+          Copy-Item "$($location.Path)/$($item)/main.html" -Destination "..\dist\index.html"  -Recurse 
      }
 
      #revert tsconfig changes
