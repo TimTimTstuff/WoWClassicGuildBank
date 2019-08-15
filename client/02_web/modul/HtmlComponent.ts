@@ -1,30 +1,3 @@
-enum HtmlEventTrigger{
-    None,
-    Click = "onclick",
-    HoverIn = "onmouseover",
-    HoverOut = "onmouseout",
-    Change = "onchange",
-    KeyDown = "onkeydown",
-    KeyUp = "onkeyup",
-
-}
-
-class HtmlComponentEvent{
-    trigger:string ="";
-    localEvent:number = -1;
-    callback:undefined | ((d:any)=>void) = undefined;
-    localId:number = -1;
-    genid:string = "";
-}
-
-class ObservedElement{
-    element:HTMLElement = <any>null;
-    isVal:boolean = false;
-    isHtml:boolean = false;
-}
-
-
-
 abstract class HtmlComponent{
 
     
