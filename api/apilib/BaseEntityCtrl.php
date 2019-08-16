@@ -9,7 +9,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
     /**
      * Undocumented variable
      *
-     * @var ApiController
+     * @var ApiService
      */
     private $context;
 
@@ -22,7 +22,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
         return $model->hasPermissions();
     }
 
-    function setContext(ApiController $context){
+    function setContext(ApiService $context){
         $this->context = $context;
     }
 

@@ -6,7 +6,7 @@ use RedBeanPHP\OODBBean;
 
 SimpleFacadeBeanHelper::setFactoryFunction( function( $name ) {
         $model = new $name();
-        $model->setContext(ApiController::getInstance());
+        $model->setContext(ApiService::getInstance());
         return $model;
     } );
 
@@ -16,7 +16,7 @@ class MainModel extends RedBean_SimpleModel{
     /**
      * Undocumented variable
      *
-     * @var ApiController
+     * @var ApiService
      */
     public $api;
 
@@ -53,7 +53,7 @@ class MainModel extends RedBean_SimpleModel{
         return $this->bean->getID() == 0;
     }
 
-    public function setContext(ApiController $api){
+    public function setContext(ApiService $api){
         $this->api = $api;
     }
 }

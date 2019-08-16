@@ -1,5 +1,7 @@
 <?php 
-
+/**
+ * Base Controller for API Calls. ApiController calls this methods
+ */
 interface ApiBaseCtrl{
     /**
      * Returns the entity name
@@ -8,7 +10,13 @@ interface ApiBaseCtrl{
      */
     function getEntityName();
 
-    function setContext(ApiController $context);
+    /**
+     * Sets the Api Controller
+     *
+     * @param ApiService $context
+     * @return void
+     */
+    function setContext(ApiService $context);
 
     /**
      * Get Records
@@ -27,25 +35,42 @@ interface ApiBaseCtrl{
      * @return object single object 
      */
     function getById($id,$param);
+    
     /**
      * Update a specific record
      * Method: PUT
      * @param int $id record id
-     * @param object $data record data 
-     * @return void
+     * @param array $data record data 
+     * @return object single updated object
      */
     function update($id, $data);
 
     /**
-     * Undocumented function
-     *
-     * @param [type] $id
+     * Detelets a Record
+     * METHOD: DELETE
+     * @param int $id
      * @return void
      */
     function delete($id);
 
+    /**
+     * Creates a record
+     * METHOD: POST
+     * @param array $data
+     * @return object Created Object
+     */
     function create($data);
 
+    /**
+     * Invokes an action in the model class
+     *
+     * @param string $action
+     * @param integer $id
+     * @param object $data
+     * @return object action result
+     * 
+     * 
+     */
     function invokeAction(string $action, int $id, $data);
     
 }
