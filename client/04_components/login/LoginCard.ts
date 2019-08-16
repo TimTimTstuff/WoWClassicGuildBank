@@ -80,12 +80,13 @@ class LoginCard extends HtmlComponent{
                 return;
             }
             let request = new UserActions(this.service);
-            request.sendLoginRequest(this.username_new,this.password_new,(m,c,t)=>{
+            request.sendLoginRequest(this.username,this.password,(m,c,t)=>{
                 this.msg = "Login erfolgreich";
                 setTimeout(()=>{
                     this.service.setToken(t);
                     GlobalEvents.triggerEvent("login",true);
                     GlobalEvents.triggerEvent("update_nav",null);
+                    GlobalEvents.triggerEvent("go_home",null);
                     
                     
                     

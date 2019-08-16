@@ -30,6 +30,17 @@ class UserActions{
             });
     }
 
+    public sendWhoAmIRequest(success:(name:string,id:number,level:number,loggedIn:boolean)=>void,error:()=>void){
+        this.sc.apiRequest<WhoAmIResult>(
+            ApiRequest.createRequest(ApiRequestType.Action,ApiEntities.User,null,ApiActions.WhoAmI,{},{}),(r)=>{
+                if(r.success){
+                    success(r.name,r.id,r.level,r.loggedIn)
+                }else{
+                    error();
+                }
+            });
+    }
+
 
 
 }
@@ -45,4 +56,13 @@ interface LoginResult {
     message: string;
     code:    number;
     token:  string;
+}
+
+
+ interface WhoAmIResult {
+    success:  boolean;
+    name:     string;
+    id:       number;
+    level:    number;
+    loggedIn: boolean;
 }

@@ -1,4 +1,5 @@
 enum ApiActions{
     Login = "login",
-    RegisterUser = "registeruser"
+    RegisterUser = "registeruser",
+    WhoAmI = "whoami"
 }

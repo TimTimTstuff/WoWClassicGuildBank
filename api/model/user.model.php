@@ -13,6 +13,14 @@ class LoginActionResult{
     public $code = 0;
 }
 
+class WhoAmIResult{
+    public $success = false;
+    public $name;
+    public $id;
+    public $level;
+    public $loggedIn = false;
+}
+
 class Model_User extends MainModel{
     
    private $isCreateRequest = false;
@@ -31,8 +39,8 @@ class Model_User extends MainModel{
    }
     
     public function update(){
-        if($this->isCreateRequest){
-            $this->isCreateRequest = false;
+        if($this->isCreate()){
+            $this->isCreateRequest = true;
             $this->bean->roleLevel = 1;
         }else{
             
@@ -43,7 +51,7 @@ class Model_User extends MainModel{
     public function hasPermissions(){
         $request = $this->api->getRequest();
         if($this->hasUserLevel(RoleLevel::ADMIN))return true;
-        if(in_array($request->action,["login","registeruser"]))return true;
+        if(in_array($request->action,["login","registeruser","whoami"]))return true;
         
         if($this->hasUserLevel(RoleLevel::MEMBER))return true;
         
@@ -54,7 +62,7 @@ class Model_User extends MainModel{
     public function after_update(){
         if($this->isCreateRequest){
             $this->isCreateRequest = false;
-            $this->setSystemData($this->bean,$this->bean);
+            $this->setSystemData($this->bean,$this->bean->getID());
             R::store($this->bean);
         }
     }
@@ -86,6 +94,19 @@ class Model_User extends MainModel{
         $result->code = 2;
         $result->message = "User Registration was successfull";
         $result->success = true;
+        return $result;
+    }
+    
+    public function action_whoami(){
+        
+        $b = R::load($this->api->getRequest()->baseEntity,$this->api->getSession()->getUserId());
+        $hasId = $this->api->getSession()->getUserId() != null;
+        $result = new WhoAmIResult();
+        $result->id = $hasId!=null?$b->getID():0;
+        $result->level = $hasId!=null?$b->roleLevel:RoleLevel::GUEST;
+        $result->name = $hasId!=null?$b->username:"Gast";
+        $result->success = true;
+        $result->loggedIn = $hasId!=null;
         return $result;
     }
 

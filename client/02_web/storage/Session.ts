@@ -12,12 +12,20 @@ class Session extends SessionStorage{
         this.setValue("token",value);
     }
 
-    set LoggedIn(value:boolean){
+    set login(value:boolean){
         this.loggedIn = value;
     }
 
     public isLoggedIn(){
         return this.loggedIn;
+    }
+
+    get roleLevel():number{
+        return this.getValueOrSetDefault("role",0);
+    }
+
+    set roleLevel(value:number){
+        this.setValue("role",value);
     }
 
     get username():string{
@@ -32,7 +40,7 @@ class Session extends SessionStorage{
         return this.getValueOrSetDefault("userid",0);
     }
 
-    set userid(id:number){
+    set userId(id:number){
         this.setValue("userid",id);
     }
 

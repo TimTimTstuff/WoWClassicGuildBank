@@ -25,13 +25,25 @@ class BankApp{
         this.setupMainNavigation();
         this.setupGlobalEvents();
 
+        
  
     }
 
     public start():void{
-        this.pageController.loadHtmlComponentInSection("nav",this.navCard);
-        this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1>");
-        this.mainNavigation.onNavigate();
+        new UserActions(this.services).sendWhoAmIRequest((n,i,l,li)=>{
+            BankApp.storage.userId = i;
+            BankApp.storage.username = n;
+            BankApp.storage.login = li;
+            BankApp.storage.roleLevel = l;
+
+            this.pageController.loadHtmlComponentInSection("nav",this.navCard);
+            this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1>");
+            this.mainNavigation.onNavigate();
+
+        },()=>{
+            this.logger.error("WhoAmI Request Faild. Can't load App!","Initialize");
+        });
+       
     }
 
     private setupMainNavigation(){
@@ -39,7 +51,7 @@ class BankApp{
             new RouteSet("main","Home",null,10)
             .addSection("c_head","<h2>Home</h2>")
             .setIsVisibleCheck(()=>{
-                return BankApp.storage.isLoggedIn()
+                return true;
             }),
             
 
@@ -66,7 +78,14 @@ class BankApp{
             .addSection("c_body",new LoginCard(this.services))
             .setIsVisibleCheck(()=>{
                 return !BankApp.storage.isLoggedIn()
-            }),            
+            }),
+            new RouteSet("logout","Logout",null,50)
+            .addSection("c_head","<h2>Logout</h2>")
+            .addSection("c_body","")
+            .setIsVisibleCheck(()=>{
+               return false;
+            }),  
+                      
         ]);
     }
 
@@ -83,7 +102,10 @@ class BankApp{
     private setupGlobalEvents(){
         GlobalEvents.addEvent("update_nav",()=>{ this.navCard.update();});
         GlobalEvents.addEvent("login",(d:boolean)=>{
-            BankApp.storage.LoggedIn = d;
+            BankApp.storage.login = d;
+        });
+        GlobalEvents.addEvent("go_home",()=>{
+            location.hash = "#main";
         });
         this.mainNavigation.addNavigationEvent((pre,post)=>{
             this.pageController.clearSection("c_head");
