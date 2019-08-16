@@ -1,7 +1,10 @@
 <?php
-  
-  use RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
-    SimpleFacadeBeanHelper::setFactoryFunction( function( $name ) {
+
+
+use RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
+use RedBeanPHP\OODBBean;
+
+SimpleFacadeBeanHelper::setFactoryFunction( function( $name ) {
         $model = new $name();
         $model->setContext(ApiController::getInstance());
         return $model;
@@ -16,7 +19,36 @@ class MainModel extends RedBean_SimpleModel{
      * @var ApiController
      */
     public $api;
+
+    protected function getUserId(){
+        return $this->api->getSession()->getUserId();
+    }
+
+    protected function hasUserLevel($neededLevel){
+        return $neededLevel <= $this->api->getSession()->getUserLevel();
+    }
     
+    public function setSystemData(OODBBean $bean,$userId){
+        if(!isset($bean->createdBy))
+            $bean->createdBy = $userId;
+        if(!isset($bean->createdOn))
+            $bean->createdOn = new DateTime();
+        if(!isset($bean->modifiedBy))
+            $bean->modifiedBy = $userId;
+        if(!isset($bean->modifiedOn))
+            $bean->modifiedOn = new DateTime();
+        if(!isset($bean->status))
+            $bean->status = 1;
+        if(!isset($bean->owner)){
+            $bean->owner = $userId;
+        }
+    }
+
+    public function setUpdateSystemData(OODBBean $bean, $userId){
+        $bean->modifiedBy = $userId;
+        $bean->modifiedOn = new DateTime();
+    }
+
     public function isCreate(){
         return $this->bean->getID() == 0;
     }

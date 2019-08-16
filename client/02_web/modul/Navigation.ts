@@ -5,6 +5,7 @@ class Navigation{
     private pageCtrl: PageController;
     private defaultRoute?: string;
     private log: ILogger;
+    
 
     private preNavigationEvents:((pre:string,post:string)=>void)[] = [];
     private postNavigationEvents:((pre:string,post:string)=>void)[] = []

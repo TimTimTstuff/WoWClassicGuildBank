@@ -1,0 +1,23 @@
+.form{
+    width: 250px;
+    padding:20px;
+}
+.form-row{
+    width: 100%;
+    display: flex;
+    padding-bottom: 10px;
+}
+.form-cell{
+    display:inline-block;
+
+}
+
+.width-h{
+    width: 50%;
+}
+
+.form-cell input{
+    background-color: black;
+    border:solid thin gray;
+    padding:5px;
+}

@@ -46,5 +46,6 @@ interface ApiBaseCtrl{
 
     function create($data);
 
+    function invokeAction(string $action, int $id, $data);
     
 }

@@ -51,6 +51,7 @@ class ApiController
     private $debugMode = false;
     private $authHeaderKey = null;
     private $allowedEntities = array();
+    private $session;
     /**
      * Undocumented variable
      *
@@ -68,6 +69,17 @@ class ApiController
         $this->apiControllers["entity"] = new BaseEntityCtrl();
         $this->authHeaderKey = $authHeaderKey;
         $this->allowedEntities = null;
+        
+    }
+
+    
+    /**
+     * Undocumented function
+     *
+     * @return ApiSession
+     */
+    public function getSession(){
+        return $this->session;
     }
 
     public function setAllowedEntities(array $allowedEntities){
@@ -95,13 +107,21 @@ class ApiController
     }
 
     public function start(){
-        $apiPath = str_replace($this->baseFolder,"", $_SERVER['REQUEST_URI']);
+        $apiPath = str_replace($this->baseFolder,"", strtolower($_SERVER['REQUEST_URI']));
         $this->apiRequest = ApiRequest::ParseRequest($apiPath, $_SERVER['REQUEST_METHOD'],json_decode(file_get_contents('php://input'), true),$this->authHeaderKey);
         $this->debugMode = $this->apiRequest->params['debug']??false || $this->debugMode;
-       
+        $this->session = new ApiSession($this->apiRequest->authKey);
+        $this->session->setValue("lastaction",new DateTime());
+            if($this->apiRequest->baseEntity == null){
+               
+                $this->createMessageResponse(true,"API Base not implemented");
+                $this->setState(HttpResponseCodes::NotImplemented);
+                return;
+            }
         
             if(count($this->allowedEntities) == 0 || in_array($this->apiRequest->baseEntity,$this->allowedEntities)){
-               if(file_exists('model/'.$this->apiRequest->baseEntity.".model.php")){
+                
+                if(file_exists('model/'.$this->apiRequest->baseEntity.".model.php")){
                    include('model/'.$this->apiRequest->baseEntity.".model.php");
                }
                 $this->run();
@@ -134,22 +154,32 @@ class ApiController
         }
 
         $apiCtrl->setContext($this);
-        
+        if(!$apiCtrl->hasPermission()){
+            $this->createMessageResponse(false,"You haven't the permissions to do this action");
+            $this->setState(HttpResponseCodes::Unauthorized);
+            return;
+        }
         switch ($this->apiRequest->method) {
             case 'GET':
                     if($this->apiRequest->requestedId != null){
                         $this->response = $apiCtrl->getById($this->apiRequest->requestedId,$this->apiRequest->params);
                     }else{
-                        $this->response = $apiCtrl->get($this->apiRequest->requestedId);
+                        $this->response = $apiCtrl->get($this->apiRequest->params);
                     }
                 break;
             case 'PUT':
-            $this->response = $apiCtrl->update($this->apiRequest->requestedId,$this->apiRequest->input);
+                    $this->response = $apiCtrl->update($this->apiRequest->requestedId,$this->apiRequest->input);
                 break;
             case 'POST':
-                    $this->response = $apiCtrl->create($this->apiRequest->input);
+                    if($this->apiRequest->action != null){
+                        $this->response = $apiCtrl->invokeAction($this->apiRequest->action,$this->apiRequest->requestedId,$this->apiRequest->input);
+                    }else{
+                        $this->response = $apiCtrl->create($this->apiRequest->input);
+                    }
+                    
                 break;
             case 'DELETE':
+                    $this->response = $apiCtrl->delete($this->apiRequest->requestedId,$this->apiRequest->input);
                 break;
             default:
                 $this->createMessageResponse(false,"Not supported Method: ".$this->apiRequest->method);
@@ -164,7 +194,7 @@ class ApiController
 
      
         $response = null;
-       
+        http_response_code($this->currentState);
         if($this->response == null){
             $msg = new ApiMessageResponse();
             $msg->isSuccess = false;
@@ -199,3 +229,5 @@ class ApiController
     }
 
 }
+
+?>

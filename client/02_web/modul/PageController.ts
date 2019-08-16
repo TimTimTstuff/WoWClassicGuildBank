@@ -31,7 +31,7 @@ class PageController{
         } 
     }
    
-    private clearSection(sectionName: string) {
+    public clearSection(sectionName: string) {
         if(this.activeComponents[sectionName] !== undefined){
             this.activeComponents[sectionName].remove();
             delete this.activeComponents[sectionName];
