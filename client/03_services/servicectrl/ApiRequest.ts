@@ -17,7 +17,7 @@ class ApiRequest {
     public actionName:string;
     public token:string;
 
-    public static createRequest(requestType:ApiRequestType,entityName:string,recordId:number,actionName:string,urlParam:{[index:string]:string},data:any,token:string):ApiRequest{
+    public static createRequest(requestType:ApiRequestType,entityName:string,recordId:number,actionName:string,urlParam:{[index:string]:string},data:any):ApiRequest{
         return {
             data:data,
             entity:entityName,
@@ -25,7 +25,7 @@ class ApiRequest {
             param:ApiRequest.buildUrlParam(urlParam),
             recordId:recordId,
             actionName:actionName,
-            token:token
+            token:null
         };
     }
     private static buildUrlParam(urlParam: { [index: string]: string; }): string {

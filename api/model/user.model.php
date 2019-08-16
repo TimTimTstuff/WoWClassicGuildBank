@@ -31,8 +31,8 @@ class Model_User extends MainModel{
    }
     
     public function update(){
-        if($this->isCreate()){
-            $this->isCreateRequest = true;
+        if($this->isCreateRequest){
+            $this->isCreateRequest = false;
             $this->bean->roleLevel = 1;
         }else{
             

@@ -17,8 +17,8 @@ function serviceTest(){
             null,
             ApiActions.RegisterUser,
             {},
-            <UserModel>{username:"Testuser2",password:"Testpassword",email:"testmail2@tstuff.de"},
-            null);
+            <UserModel>{username:"Testuser2",password:"Testpassword",email:"testmail2@tstuff.de"}
+            );
 
 
     let login = ApiRequest.createRequest(
@@ -27,8 +27,8 @@ function serviceTest(){
         null,
         ApiActions.Login,
         {},
-        {username:"Testuser2",password:"Testpassword"},
-        null
+        {username:"Testuser2",password:"Testpassword"}
+        
     );
     apiService.apiRequest<UserModel>(register,r=>{
         console.log(r);

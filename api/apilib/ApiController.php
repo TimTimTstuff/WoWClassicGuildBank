@@ -146,7 +146,7 @@ class ApiController
     }
     
     private function run(){
-        
+      
         $apiCtrl = $this->apiControllers["entity"]??null;
         if($apiCtrl == null ){
             $this->setState(HttpResponseCodes::NotFound);
@@ -194,7 +194,7 @@ class ApiController
 
      
         $response = null;
-        http_response_code($this->currentState);
+       
         if($this->response == null){
             $msg = new ApiMessageResponse();
             $msg->isSuccess = false;
@@ -202,6 +202,7 @@ class ApiController
             $response = $msg;
         
         }else{
+            $this->setState(HttpResponseCodes::Ok);
             $response = $this->response;
              
         }
@@ -212,7 +213,7 @@ class ApiController
             $debugMsg->result = $response;
             $response = $debugMsg;
         }
-        
+        http_response_code($this->currentState);
         return json_encode($response,JSON_PRETTY_PRINT);
     }
 

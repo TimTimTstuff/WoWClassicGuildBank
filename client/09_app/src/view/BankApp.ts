@@ -3,7 +3,6 @@ class BankApp{
     private pageController:PageController;
     private mainNavigation:Navigation;
     private logger:ILogger;
-    private sessionStorage:Dictionary;
     private navCard:NavigationCard;
     private services:ServiceController;
 
@@ -13,22 +12,23 @@ class BankApp{
         
         let loggerSetup = StaticLogger.getLoggerFactory();
         loggerSetup.setLogLevel(LogLevel.Trace);
-        this.sessionStorage = new Dictionary();
         this.logger = StaticLogger.Log();
         BankApp.storage = Session.load(Configuration.SESSION_KEY,this.logger);
         this.pageController = new PageController(this.logger);
         this.mainNavigation = new Navigation(this.pageController,"main",this.logger);
         this.navCard = new NavigationCard(this.mainNavigation,this.logger);
+
+        let sc = new ServiceConfiguration(Configuration.BASE_URL,Configuration.API_BASE,"");
+        this.services = new ServiceController(sc,BankApp.storage);
+
         this.setupPageSections();
         this.setupMainNavigation();
         this.setupGlobalEvents();
 
-        let sc = new ServiceConfiguration(Configuration.BASE_URL,Configuration.API_BASE,"");
-        this.services = new ServiceController(sc,BankApp.storage);
+ 
     }
 
     public start():void{
-        this.sessionStorage.setValue("login",false);
         this.pageController.loadHtmlComponentInSection("nav",this.navCard);
         this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1>");
         this.mainNavigation.onNavigate();
@@ -37,20 +37,36 @@ class BankApp{
     private setupMainNavigation(){
         this.mainNavigation.registerRoute([
             new RouteSet("main","Home",null,10)
-            .addSection("c_head","<h2>Home</h2>"),
+            .addSection("c_head","<h2>Home</h2>")
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn()
+            }),
+            
 
             new RouteSet("bank","Bank",null ,20)
-            .addSection("c_head","<h2>Bank</h2>"),
+            .addSection("c_head","<h2>Bank</h2>")
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn()
+            }),
 
             new RouteSet("profile","Profile",null,30)
-            .addSection("c_head","<h2>Profile</h2>"),
+            .addSection("c_head","<h2>Profile</h2>")
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn()
+            }),
 
             new RouteSet("char","Chars",null,40)
-            .addSection("c_head","<h2>Chars</h2>"),
+            .addSection("c_head","<h2>Chars</h2>")
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn()
+            }),
 
             new RouteSet("login","Login",null,50)
             .addSection("c_head","<h2>Login</h2>")
-            .addSection("c_body",new LoginCard()),            
+            .addSection("c_body",new LoginCard(this.services))
+            .setIsVisibleCheck(()=>{
+                return !BankApp.storage.isLoggedIn()
+            }),            
         ]);
     }
 
@@ -66,6 +82,9 @@ class BankApp{
 
     private setupGlobalEvents(){
         GlobalEvents.addEvent("update_nav",()=>{ this.navCard.update();});
+        GlobalEvents.addEvent("login",(d:boolean)=>{
+            BankApp.storage.LoggedIn = d;
+        });
         this.mainNavigation.addNavigationEvent((pre,post)=>{
             this.pageController.clearSection("c_head");
             this.pageController.clearSection("c_body");

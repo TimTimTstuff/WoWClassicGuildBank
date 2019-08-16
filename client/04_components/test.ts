@@ -15,7 +15,7 @@ function compTest(){
 
     let rs2 = new RouteSet("sub","Help",null,99);
     rs2.addSection("two","<h2> Sub page </h2>");
-    rs2.addSection("one",new LoginCard());
+    //rs2.addSection("one",new LoginCard());
 
     n.registerRoute([rs,rs2]);
     
