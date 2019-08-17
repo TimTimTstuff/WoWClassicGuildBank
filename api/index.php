@@ -1,17 +1,8 @@
 <?php
 
- include('lib/rb-mysql.php');
- include('apilib/ApiService.extension.php');
- include('apilib/ApiService.php');
- include('apilib/ApiRequest.php');
- include('apilib/ApiBaseController.php');
- include('apilib/BaseEntityCtrl.php');
- include('apilib/Hook.php');
- include('apilib/ApiSession.php');
- include('model/sessionvar.model.php');
- 
+includeLib();
 
- $baseFolder = strtolower("/WoWClassicGuildBank/api/");
+$baseFolder = strtolower("/WoWClassicGuildBank/api/");
 
 R::setup("mysql:host=localhost;dbname=tstuff_wow","root");
 $actrl = new ApiService($baseFolder,"token");
@@ -20,6 +11,21 @@ $actrl->start();
 $actrl->setHeader();
 echo $actrl->getResponse();
 
+
+
+
+function includeLib(){
+    include 'lib/rb-mysql.php';
+    include 'config/defaultvalues.php';
+    include 'api_lib/model/api.model.php';
+    include 'api_lib/model/ApiRequest.php';
+    include 'api_lib/ReadBean.extension.php';
+    include 'api_lib/ApiSession.php';
+    include 'api_lib/ApiBaseEntityModel.php';
+    include 'api_lib/ApiBaseCtrl.php';
+    include 'api_lib/ApiService.php';
+    include 'controller/BaseEntityCtrl.php';
+}
 
 
 ?>

@@ -1,9 +1,8 @@
 <?php
-class ActionFaultResult{
-    public $success = false;
-    public $message = "";
-    public $code = 0;
-}
+
+/**
+ * All DB Entities can be controlled over this Controller
+ */
 class BaseEntityCtrl implements ApiBaseCtrl{
 
     /**
@@ -12,6 +11,8 @@ class BaseEntityCtrl implements ApiBaseCtrl{
      * @var ApiService
      */
     private $context;
+
+    private $prePostModel;
 
     function getEntityName(){
         return $this->context->getRequest()->baseEntity;
@@ -24,46 +25,54 @@ class BaseEntityCtrl implements ApiBaseCtrl{
 
     function setContext(ApiService $context){
         $this->context = $context;
+        $this->prePostModel = R::dispense($this->getEntityName());
     }
 
     function get($param){
-        $model = R::dispense($this->getEntityName());
-        $model->preGet($param);
+       
+        
+        $this->prePostModel->preGet(["param"=>$param]);
+
         $bindings = ["limit"=>$this->getLimitOrDefault($param),"offset"=>$this->getOffsetOrDefault($param)];
         $result = R::find($this->getEntityName()," status = 1 limit :limit offset :offset ",$bindings);
-        $model->postGet($result);
+
+        $this->prePostModel->postGet(["result"=>$result]);
+
+
         return $result;
     }
 
-  
-
     function getById($id,$param){
-        $model = R::dispense($this->getEntityName());
-        $model->preGetById($param);
+       
+        $this->prePostModel->preGetById(["id"=>$id,"param"=>$param]);
         $result = R::findOne($this->getEntityName(),"status = 1 and id = ?",[$id]);
-        $model->postGetById($result);
+        $this->prePostModel->postGetById(["result"=>$result]);
         return $result;
     }
 
     function update($id, $data){
         $bean = R::findOne($this->getEntityName(),"status = 1 and id = ",[$id]);
-        $model = R::dispense($this->getEntityName());
-        $model->preUpdate($id,$data,$bean);
         $bean->import($data);
+
+        $this->prePostModel->preUpdate(["id"=>$id,"data"=>$data,"pre"=>$bean]);
+
         R::store($bean);
-        $model->postUpdate($id,$data,$bean);
+
+        $this->prePostModel->postUpdate(["result"=>$bean]);
+
         return $bean;
     }
 
 
     function delete($id){
-        $model = R::dispense($this->getEntityName());
-        $model->preDelete($id);
         //R::trash(R::findOne($this->getEntityName(),"id = ?",[$id]));
         $b = R::findOne($this->getEntityName(),"status = 1 and id = ?",[$id]);
+
+        $this->prePostModel->preDelete(["id"=>$id,"pre"=>$b]);
+
         $b->state = 0;
         R::store($b);
-        $model->postDelete($id);
+        $this->prePostModel->postDelete(["result"=>$b]);
         return null;
     }
 
@@ -71,11 +80,11 @@ class BaseEntityCtrl implements ApiBaseCtrl{
         
        $entity = R::dispense($this->getEntityName());
        $entity->import($data);
-       $model = R::dispense($this->getEntityName());
-        $model->preCreate($entity,$data);
-       R::store($entity);
+     
+        $this->prePostModel->preCreate(["data"=>$data,"pre"=>$entity]);
+        R::store($entity);
        
-       $model->postCreate($entity,$data);
+       $this->prePostModel->postCreate(["result"=>$entity]);
        return $entity;
     }
 
@@ -103,6 +112,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
         $result->success = false;
         $result->message = "Unknown Action: ".$action;
         $result->code = 1;
+        return $result;
         
     }
 

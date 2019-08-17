@@ -1,17 +1,8 @@
 <?php
 
 
-use RedBeanPHP\BeanHelper\SimpleFacadeBeanHelper as SimpleFacadeBeanHelper;
-use RedBeanPHP\OODBBean;
 
-SimpleFacadeBeanHelper::setFactoryFunction( function( $name ) {
-        $model = new $name();
-        $model->setContext(ApiService::getInstance());
-        return $model;
-    } );
-
-
-class MainModel extends RedBean_SimpleModel{
+class ApiBaseEntityModel extends RedBean_SimpleModel{
     
     /**
      * Undocumented variable
@@ -28,7 +19,7 @@ class MainModel extends RedBean_SimpleModel{
         return $neededLevel <= $this->api->getSession()->getUserLevel();
     }
     
-    public function setSystemData(OODBBean $bean,$userId){
+    public function setSystemData(RedBeanPHP\OODBBean $bean,$userId){
         if(!isset($bean->createdBy))
             $bean->createdBy = $userId;
         if(!isset($bean->createdOn))

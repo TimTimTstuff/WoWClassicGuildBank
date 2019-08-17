@@ -1,12 +1,6 @@
 <?php
 
-class RoleLevel{
-    public const GUEST = 0;
-    public const MEMBER = 1;
-    public const GUILD_MEMBER = 2;
-    public const OFFICER = 3;
-    public const ADMIN = 99;
-}
+
 
 class ApiSession{
     private $user;

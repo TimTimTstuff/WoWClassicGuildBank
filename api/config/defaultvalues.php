@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * List of Http Response Codes
+ */
 class HttpResponseCodes{
     public const Ok = 200;
     public const Created = 201;
@@ -12,19 +14,14 @@ class HttpResponseCodes{
 
 }
 
-class ApiMessageResponse{
-    public $isSuccess;
-    public $message;
-    public $exception;
-    public $data;
-}
-
-class ApiDebugResult{
-    public $request;
-    public $result;
-}
-
-class ApiResult{
-    public $data;
-    public $type;
+/**
+ * Defined User Role Levels
+ * @todo Put this in some Configuration
+ */
+class RoleLevel{
+    public const GUEST = 0;
+    public const MEMBER = 1;
+    public const GUILD_MEMBER = 2;
+    public const OFFICER = 3;
+    public const ADMIN = 99;
 }

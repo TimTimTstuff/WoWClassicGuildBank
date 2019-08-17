@@ -21,7 +21,7 @@ class WhoAmIResult{
     public $loggedIn = false;
 }
 
-class Model_User extends MainModel{
+class Model_User extends ApiBaseEntityModel{
     
    private $isCreateRequest = false;
 
@@ -37,7 +37,18 @@ class Model_User extends MainModel{
         $this->bean->modified_on = null;
         $this->bean->modified_by = null;
    }
+   
+   public function hasPermissions(){
+    $request = $this->api->getRequest();
+    if($this->hasUserLevel(RoleLevel::ADMIN))return true;
+    if(in_array($request->action,["login","registeruser","whoami"]))return true;
     
+    if($this->hasUserLevel(RoleLevel::MEMBER))return true;
+    
+    return false;
+    }
+
+
     public function update(){
         if($this->isCreate()){
             $this->isCreateRequest = true;
@@ -48,17 +59,6 @@ class Model_User extends MainModel{
        
     }
 
-    public function hasPermissions(){
-        $request = $this->api->getRequest();
-        if($this->hasUserLevel(RoleLevel::ADMIN))return true;
-        if(in_array($request->action,["login","registeruser","whoami"]))return true;
-        
-        if($this->hasUserLevel(RoleLevel::MEMBER))return true;
-        
-        return false;
-    }
-
-    
     public function after_update(){
         if($this->isCreateRequest){
             $this->isCreateRequest = false;
