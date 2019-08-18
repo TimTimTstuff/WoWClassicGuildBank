@@ -12,6 +12,8 @@ class BaseEntityCtrl implements ApiBaseCtrl{
      */
     private $context;
 
+    public static $tableMeta = [];
+
     private $prePostModel;
 
     function getEntityName(){
@@ -26,15 +28,31 @@ class BaseEntityCtrl implements ApiBaseCtrl{
     function setContext(ApiService $context){
         $this->context = $context;
         $this->prePostModel = R::dispense($this->getEntityName());
+        $this->loadTableInfo();
+    }
+
+    private function loadTableInfo(){
+        if(!isset(self::$tableMeta[$this->getEntityName()])){
+            $s = R::getAll("SELECT COLUMN_NAME,DATA_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = ?",[$this->getEntityName()]);
+            $newArr = array();
+            foreach ($s as $value) {
+                $newArr[$value['COLUMN_NAME']] = $value['DATA_TYPE'];
+            }
+            self::$tableMeta[$this->getEntityName()] = $newArr;
+        }
     }
 
     function get($param){
-       
-        
-        $this->prePostModel->preGet(["param"=>$param]);
 
+        $this->prePostModel->preGet(["param"=>$param]);
         $bindings = ["limit"=>$this->getLimitOrDefault($param),"offset"=>$this->getOffsetOrDefault($param)];
-        $result = R::find($this->getEntityName()," status = 1 limit :limit offset :offset ",$bindings);
+        $order = $this->addOrdering($param);
+        $filter = $this->generateFilter($param);
+        $query = "status = 1 $filter order by $order limit :limit offset :offset";
+        //echo $query;
+        $result = R::find($this->getEntityName(),$query,$bindings);
 
         $this->prePostModel->postGet(["result"=>$result]);
 
@@ -51,11 +69,11 @@ class BaseEntityCtrl implements ApiBaseCtrl{
     }
 
     function update($id, $data){
-        $bean = R::findOne($this->getEntityName(),"status = 1 and id = ",[$id]);
+        $bean = R::findOne($this->getEntityName(),"status = 1 and id = ?",[$id]);
         $bean->import($data);
 
         $this->prePostModel->preUpdate(["id"=>$id,"data"=>$data,"pre"=>$bean]);
-
+        
         R::store($bean);
 
         $this->prePostModel->postUpdate(["result"=>$bean]);
@@ -113,6 +131,96 @@ class BaseEntityCtrl implements ApiBaseCtrl{
         $result->message = "Unknown Action: ".$action;
         $result->code = 1;
         return $result;
+        
+    }
+
+    private function hasField($field){
+        return array_key_exists($field,self::$tableMeta[$this->getEntityName()]);
+    }
+
+
+    private function addOrdering($param){
+        
+        if(isset($param['orderasc']) && $this->hasField($param['orderasc'])){
+            return $param['orderasc']." ASC";
+        }elseif(isset($param['orderdesc']) && $this->hasField($param['orderdesc'])){
+            return $param['orderdesc']." DESC";
+        }else{
+            return "id ASC";
+        }
+     
+       
+    }
+
+    private function generateFilter($param){
+
+        $stage  = ["field","operator","value","operator"];
+
+        if(isset($param['$filter'])){
+           
+            $filter = urldecode($param['$filter']);
+            $arg = explode(" ",$filter);
+            $buildArr = array();
+            $currStage = 0;
+
+            for($i = 0; $i < count($arg); $i++){
+
+                $value = $arg[$i];
+               
+                if($value == ""){}
+                elseif($currStage == 0){
+                    $fieldName = str_replace("(","",$value);
+                    if($this->hasField($fieldName)){
+
+                        $buildArr[] = $value;
+                    }else{
+                      
+                        throw new ApiException("Can't find Field: $fieldName",$this->context);
+                    }
+                    
+                    $currStage++;
+                }elseif($currStage == 1 || $currStage == 3){
+                    if(array_key_exists($value,QueryModel::OPERATORS)){
+                        $buildArr[] = QueryModel::OPERATORS[$value];
+                    }
+                    $currStage++;
+                }else{
+                    if($value[0] == "'"){
+                        if($currStage != 2)echo "not value stage!\r\n";
+                        if(strpos($value,1,-1) == "'"){
+                            $buildArr[] = $value;
+                           
+                        }else{
+                            $temp = $value;
+                            $search = true;
+                            while($i < (count($arg)-1) && $search){
+                            
+                                $i++;
+                                if($arg[$i] != ""){
+                                $temp .= " ".$arg[$i];
+                               
+                                if(substr($arg[$i],-1) == "'"){
+                                    $buildArr[] = $temp;
+                                    $currStage = 0;
+                                    $search = false;
+                                }
+                                }
+                            }
+                        }
+                    }else{   
+                        $buildArr[] = $value; 
+                    }
+                    $currStage++;
+                }
+                if($currStage > 3)$currStage = 0; 
+            } 
+
+            if(count($buildArr)>2){
+                return " and ".join(" ",$buildArr);
+            }
+            return "";
+           
+        }
         
     }
 

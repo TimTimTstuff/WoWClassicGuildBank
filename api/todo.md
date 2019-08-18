@@ -6,6 +6,7 @@
 
 ## General Tasks
 - Refactor API classes
+- Cache BaseEntityController Table Data
 
 
 ## Planned Features

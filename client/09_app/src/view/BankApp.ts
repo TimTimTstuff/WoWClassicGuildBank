@@ -73,6 +73,12 @@ class BankApp{
                 return BankApp.storage.isLoggedIn()
             }),
 
+            new RouteSet("admin","Admin",null,40)
+            .addSection("c_head","<h2>admin</h2>")
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn() && BankApp.storage.roleLevel >= 3
+            }),
+
             new RouteSet("login","Login",null,50)
             .addSection("c_head","<h2>Login</h2>")
             .addSection("c_body",new LoginCard(this.services))
