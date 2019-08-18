@@ -1,5 +1,10 @@
 <?php
 
+use TStuff\Php\Logging\DefaultLogger\DBLogger;
+use TStuff\Php\Logging\DefaultLogger\FileLogger;
+use TStuff\Php\Logging\ITLogger;
+use TStuff\Php\Logging\LoggerFactory;
+use TStuff\Php\Logging\LogLevel;
 
 class ApiService
 {
@@ -81,6 +86,18 @@ class ApiService
      * @var int
      */
     private $currentState = HttpResponseCodes::NotImplemented;
+
+    /**
+     * Undocumented variable
+     *
+     * @var ITLogger
+     */
+    private $log; 
+
+    /**
+     * @var TFileCache
+     */
+    private $cache;
     /* #endregion */
     /* #region  Constructor */
 
@@ -101,6 +118,14 @@ class ApiService
         $this->apiControllers["entity"] = new BaseEntityCtrl();
         $this->authHeaderKey = $authHeaderKey;
         $this->allowedEntities = null;
+        $this->cache = TFileCache::getInstance("../cache");
+        $lf = new LoggerFactory();
+        $lf->registerLogger(new FileLogger("../log"),[LogLevel::Debug,LogLevel::Error,LogLevel::Fatal,LogLevel::Info,LogLevel::Trace,LogLevel::Warning]);
+        $lf->registerLogger(new DBLogger(),[LogLevel::Debug,LogLevel::Error,LogLevel::Fatal,LogLevel::Info,LogLevel::Trace,LogLevel::Warning]);
+        $this->log = $lf;
+        
+
+       
     }
 
     /* #endregion */
@@ -111,6 +136,22 @@ class ApiService
     public function getSession()
     {
         return $this->session;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return ITLogger
+     */
+    public function getLog(){
+        return $this->log;
+    }
+
+    /**
+     * @return TFileCache
+     */
+    public function getCache(){
+        return $this->cache;
     }
 
     /**

@@ -19,6 +19,24 @@ class ApiBaseEntityModel extends RedBean_SimpleModel{
         return $neededLevel <= $this->api->getSession()->getUserLevel();
     }
     
+    protected function createEntityReference($id,$entity){
+        
+        $name = "UNKNOWN";
+        $key = "entity_".$entity."_id_".$id;
+        if($this->api->getCache()->existsKey("entity_ref",$key)){
+            $name = $this->api->getCache()->getValue("entity_ref",$key);
+        }else{
+            $name = $this->api->getCache()->getValueOrSetDefault("entity_ref",R::load($entity,$id)->username,60);
+        }
+        
+
+        return [
+            "id"=>$id,
+            "entity"=>$entity,
+            "name"=>$name
+        ];
+    }
+
     public function setSystemData(RedBeanPHP\OODBBean $bean,$userId){
         if(!isset($bean->createdBy))
             $bean->createdBy = $userId;

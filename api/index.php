@@ -22,6 +22,14 @@ function includeLib(){
     include 'lib/rb-mysql.php';
     include 'config/enum.php';
     include 'config/error.handler.php';
+    include 'util/RandomHelper.php';
+    include 'util/ITCache.php';
+    include 'util/TFileCache.php';
+    include 'util/ITLogger.php';
+    include 'util/LogLevel.php';
+    include 'util/LoggerFactory.php';
+    include 'util/DefaultLogger/FileLogger.php';
+    include 'util/DefaultLogger/DBLogger.php';
     include 'api_lib/model/query.model.php';
     include 'api_lib/model/api.model.php';
    include 'api_lib/model/ApiRequest.php';
@@ -31,4 +39,5 @@ function includeLib(){
   include 'api_lib/ApiBaseCtrl.php';
     include 'api_lib/ApiService.php';
     include 'controller/BaseEntityCtrl.php';
+  
 }

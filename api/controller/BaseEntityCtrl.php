@@ -32,7 +32,9 @@ class BaseEntityCtrl implements ApiBaseCtrl{
     }
 
     private function loadTableInfo(){
+        self::$tableMeta = $this->context->getCache()->getValue("db_meta","table_field_meta");
         if(!isset(self::$tableMeta[$this->getEntityName()])){
+            
             $s = R::getAll("SELECT COLUMN_NAME,DATA_TYPE
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME = ?",[$this->getEntityName()]);
@@ -41,6 +43,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
                 $newArr[$value['COLUMN_NAME']] = $value['DATA_TYPE'];
             }
             self::$tableMeta[$this->getEntityName()] = $newArr;
+            $this->context->getCache()->storeValue("db_meta","table_field_meta",self::$tableMeta,60*60*24);
         }
     }
 

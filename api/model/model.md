@@ -14,13 +14,13 @@ Methods in the model will be called when they exist.
 
 BUT: this methods are not called from the current $bean, for this calls a empty bean is created, so you have to use the $context parameter. 
 
-- preGet
-- postGet
-- preGetById
-- postGetById
-- preUpdate
-- postUpdate
-- preDelete
-- postDelete
-- preCreate
-- postCreate
+- preGet [param:array]
+- postGet [result:entity]
+- preGetById [id:int,param:array]
+- postGetById [result:entity]
+- preUpdate [id:int,data:object,pre:entity]
+- postUpdate [result:entity]
+- preDelete [id:int,pre:entity]
+- postDelete [result:entity]
+- preCreate [data:object,pre:entity]
+- postCreate [result:entity]

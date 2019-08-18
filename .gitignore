@@ -3,3 +3,5 @@
 frontend/images
 frontend/ajaxdata.json
 dist
+cache
+log

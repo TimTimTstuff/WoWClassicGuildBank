@@ -12,6 +12,13 @@ class Model_News extends ApiBaseEntityModel{
         return false;
     }
 
+    public function open(){
+        if($this->api->getRequest()->method == "GET"){
+            $this->bean->owner_ref = $this->createEntityReference($this->bean->owner,"user");
+            $this->bean->created_by_ref = $this->createEntityReference($this->bean->created_by,"user");
+            $this->bean->modified_by_ref = $this->createEntityReference($this->bean->modified_by,"user");
+        }
+    }
 
     public function update(){
         if($this->isCreate()){
@@ -22,4 +29,8 @@ class Model_News extends ApiBaseEntityModel{
         }
        
     }
+
+
+    
+
 }
