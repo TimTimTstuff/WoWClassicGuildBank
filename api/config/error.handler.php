@@ -21,6 +21,7 @@ class ApiException extends Exception{
 
 function exception_handler($exception) {
 
+    
     if(get_class($exception) == "ApiException"){
         echo json_encode(["type"=>"exception","message"=>$exception->getMessage(),"requestinfo"=>$exception->getRequest()],JSON_PRETTY_PRINT);
     }else{

@@ -11,7 +11,7 @@ class NewsViewCard extends HtmlComponent{
    
    
     private loadCurrentNews(){
-        
+       // this.news = 
     }
    
    

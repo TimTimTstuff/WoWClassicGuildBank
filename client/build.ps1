@@ -11,7 +11,8 @@ $folder =
 #build type (tsconfig file)
 $defaultBuild = ".dev";    
 #folder with style files   
-$styleFolder = "..\dist\style\"
+$styleFolder = "..\dist\style\";
+$imgFolder = "..\dist\";
 
 
 
@@ -31,7 +32,7 @@ foreach ($item in $folder) {
       
 
       $localStyleFolder = "$($location.Path)\$($item)\style"
-      
+      $localImgFolder = "$($location.Path)\$($item)\img";      
 
      #copy tsconfig file
      if("" -ne $build){
@@ -46,6 +47,13 @@ foreach ($item in $folder) {
      if(Test-Path $localStyleFolder){
           Write-Host "Has Style Path"
           Copy-Item "$($localStyleFolder)\*" -Destination $styleFolder -Recurse 
+     }
+
+     #copy img files if they exist
+     if(Test-Path $localImgFolder){
+          
+          Write-Host "Has Img Path"
+          Copy-Item "$($localImgFolder)\" -Destination $imgFolder -Container -Recurse -Force 
      }
 
       #copy main html

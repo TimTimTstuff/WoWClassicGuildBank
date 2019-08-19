@@ -1,3 +1,6 @@
 enum ApiEntities{
-    User = "user"
+    User = "user",
+    News = "news",
+    Char = "char",
+    Metadata = "metadata"
 }
