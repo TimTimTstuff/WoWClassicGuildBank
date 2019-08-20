@@ -5,7 +5,7 @@ includeLib();
 
 $baseFolder = strtolower("/WoWClassicGuildBank/api/");
 
-R::setup("mysql:host=localhost;dbname=tstuff_wow","root");
+R::setup("mysql:host=localhost;dbname=tstuff_wow","root",);
 R::freeze(false);
 
 $actrl = new ApiService($baseFolder,"token");

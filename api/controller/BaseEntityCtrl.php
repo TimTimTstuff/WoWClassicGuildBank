@@ -56,7 +56,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
        $bindings = ["limit"=>$this->getLimitOrDefault($param),"offset"=>$this->getOffsetOrDefault($param)];
         $order = $this->addOrdering($param);
         $filter = $this->generateFilter($param);
-        $query = "state = 1 $filter order by $order limit :limit offset :offset";
+        $query = "status = 1 $filter order by $order limit :limit offset :offset";
         //echo $query;
         $result = R::find($this->getEntityName(),$query,$bindings);
 
@@ -93,7 +93,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
       
         $this->prePostModel->preDelete(["id"=>$id,"pre"=>$b]);
 
-        $b->state = 0;
+        $b->status = 0;
         R::store($b);
         $this->prePostModel->postDelete(["result"=>$b]);
         return null;

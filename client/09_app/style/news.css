@@ -1,0 +1,32 @@
+.record-view{
+    padding:15px;
+}
+
+.news-title{
+    font-weight: bold;
+    color: #ffd100;
+}
+
+.news-body{
+    border-bottom: solid thin #2d2d2d;
+}
+
+.news-footer{
+    font-size: 8pt;
+    font-weight: 300;
+}
+
+.record-view input{
+    background: #2d2d2d;
+    color:white;
+    border:none;
+    padding:5px;
+}
+
+.record-view textarea{
+    width: 500px;
+    height: 100px;
+    color: white;
+    background-color: #2d2d2d;
+    border:none;
+}

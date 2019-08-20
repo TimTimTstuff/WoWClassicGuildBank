@@ -26,7 +26,7 @@ class ApiBaseEntityModel extends RedBean_SimpleModel{
         if($this->api->getCache()->existsKey("entity_ref",$key)){
             $name = $this->api->getCache()->getValue("entity_ref",$key);
         }else{
-            $name = $this->api->getCache()->getValueOrSetDefault("entity_ref",R::load($entity,$id)->username,60);
+            $name = $this->api->getCache()->getValueOrSetDefault("entity_ref",$key,R::load($entity,$id)->username,60);
         }
         
 
