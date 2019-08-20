@@ -105,6 +105,7 @@ class BankApp{
             .setIsVisibleCheck(()=>{
                 return BankApp.storage.isLoggedIn() && BankApp.storage.roleLevel >= 3
             }),
+
             new RouteSet("editpostlist","News Edit","admin",40)
             .addSection("c_head","<h2>News Edit</h2>")
             .addSection("c_body",new NewsEditCard(this.services))
@@ -118,6 +119,7 @@ class BankApp{
             .setIsVisibleCheck(()=>{
                 return !BankApp.storage.isLoggedIn()
             }),
+
             new RouteSet("logout","Logout",null,50)
             .addSection("c_head","<h2>Logout</h2>")
             .addSection("c_body","")
@@ -129,6 +131,7 @@ class BankApp{
     }
 
     private setupPageSections(){
+        //define all sections which are controlled by the PageController
         this.pageController.addSection("head","header");
         this.pageController.addSection("nav","nav");
         this.pageController.addSection("content","content");
@@ -139,18 +142,27 @@ class BankApp{
     }
 
     private setupGlobalEvents(){
+        //call to update the navigation
         GlobalEvents.addEvent("update_nav",()=>{ this.navCard.update();});
+        
+        //call the login was successfull
+        //@todo set all the values, else you will be user "guest" with "guest" role
         GlobalEvents.addEvent("login",(d:boolean)=>{
             BankApp.storage.login = d;
         });
+        //navigate to the main page
         GlobalEvents.addEvent("go_home",()=>{
             location.hash = "#main";
         });
+
+        //After each navigation, clear this sections
         this.mainNavigation.addNavigationEvent((pre,post)=>{
             this.pageController.clearSection("c_head");
             this.pageController.clearSection("c_body");
             this.pageController.clearSection("c_foot");
         },true);
+
+        //call the onNavigate event when the url hash changed
         window.onhashchange = ()=>{
             this.mainNavigation.onNavigate();
         }

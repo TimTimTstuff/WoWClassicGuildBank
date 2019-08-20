@@ -16,4 +16,5 @@
 ## Base Entity Controller
 - the pre/post methods a not working as hoped. you have to return the changed array and in the controller set the values if not null. Check: get() method. 
 
-## Planned Features
+## coding
+- add a kind of autoloader / or encapsule loading 
