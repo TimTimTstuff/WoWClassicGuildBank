@@ -1,34 +1,61 @@
+class DemoCard extends HtmlComponent{
+    myParam: string;
+   
+    //define a field for the binding 
+    private bindingDemo:string = "";
+
+    //add a getter 
+    get myBindingDemo():string{
+        return this.bindingDemo;
+    }
+
+    //add a setter, call the propertyChanged after the field has changed
+    set myBindingDemo(value:string){
+        this.bindingDemo = value;
+        this.propertyChanged('myBindingDemo');//call with the variable name
+    }
+
+    /**
+     * You can put all parameters you like
+     */
+    constructor(myParam:string) {
+        super();
+        this.myParam = myParam;
+    }
+
+   
+    build(): void {
+        //create events | set the event type, local number (unique), and the event
+        let myEvent = this.registerEvent(HtmlEventTrigger.Click,0,()=>{
+            //this will add again after each button click
+            this.myBindingDemo += " again ";
+        });
+
+        //The whole HTML code for the card is put into this template variable, when you call the .render method, this is displayed on the given element
+        this.template = 
+        /*html*/
+        `
+        <!-- you can use local fields as placeholders -->
+        <span>this is a demo card: ${this.myParam}</span> 
+        <!-- bind an event to an element just use the getEventText method with your event -->
+        <button ${this.getEventText(myEvent,null)}> click me </button> 
+        <!-- you can bind a field to a element -->
+        <span data-bind='myBindingDemo'></span>`;
+    }
+
+
+}
+
 function compTest(){
    
-    StaticLogger.getLoggerFactory().setLogLevel(LogLevel.Trace);
-  
-    let pc = new PageController(StaticLogger.Log());
-    pc.addSection("one","#one");
-    pc.addSection("two","#two");
-    pc.addSection("fix","#fix");
+    //create a object of your Card
+    let card = new DemoCard("my param test");
 
-    let n = new Navigation(pc,"main",StaticLogger.Log());
-    allInfo = [pc,n];
-    let rs = new RouteSet("main","Home",null,0);
-    rs.addSection("one",new SimpleCard());
-    rs.addSection("two","<h2> Main page </h2>");
+    //bind it on a element (check index.html)
+    card.render("#demo");
+    
 
-    let rs2 = new RouteSet("sub","Help",null,99);
-    rs2.addSection("two","<h2> Sub page </h2>");
-    //rs2.addSection("one",new LoginCard());
-
-    n.registerRoute([rs,rs2]);
     
     
-    pc.loadHtmlComponentInSection("fix",new NavigationCard(n,StaticLogger.Log()));
-
-    setTimeout(() => {
-        n.onNavigate();    
-    }, 250);
-    
-    window.onhashchange = ()=>{
-       
-        n.onNavigate();
-    }
 
 }
