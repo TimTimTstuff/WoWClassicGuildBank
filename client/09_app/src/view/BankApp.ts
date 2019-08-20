@@ -1,19 +1,43 @@
 class BankApp{
 
+    /**
+     * Controlles the page build.
+     */
     private pageController:PageController;
+    /**
+     * Navigation handler
+     */
     private mainNavigation:Navigation;
+    /**
+     * Logger extension
+     */
     private logger:ILogger;
+    /**
+     * Navigation Card
+     */
     private navCard:NavigationCard;
+    /**
+     * Web Api Client
+     */
     private services:ServiceController;
 
+    /**
+     * Local storage handler
+     * It is static because i was lazy and didn't want to build an injection
+     */
     public static storage:Session;
 
     constructor() {
         
+        //setup logger
         let loggerSetup = StaticLogger.getLoggerFactory();
         loggerSetup.setLogLevel(LogLevel.Trace);
         this.logger = StaticLogger.Log();
+
+        //set the Session
         BankApp.storage = Session.load(Configuration.SESSION_KEY,this.logger);
+        
+        
         this.pageController = new PageController(this.logger);
         this.mainNavigation = new Navigation(this.pageController,"main",this.logger);
         this.navCard = new NavigationCard(this.mainNavigation,this.logger);
@@ -21,27 +45,28 @@ class BankApp{
         let sc = new ServiceConfiguration(Configuration.BASE_URL,Configuration.API_BASE,"");
         this.services = new ServiceController(sc,BankApp.storage);
 
+
         this.setupPageSections();
         this.setupMainNavigation();
         this.setupGlobalEvents();
-
-        
- 
     }
 
     public start():void{
-        new UserActions(this.services).sendWhoAmIRequest((n,i,l,li)=>{
-            BankApp.storage.userId = i;
-            BankApp.storage.username = n;
-            BankApp.storage.login = li;
-            BankApp.storage.roleLevel = l;
 
+        //Start the app by sending an whoami request, which will result the user information
+        new UserActions(this.services).sendWhoAmIRequest((username,userId,userRoleLevel,isLoggedIn)=>{
+            BankApp.storage.userId = userId;
+            BankApp.storage.username = username;
+            BankApp.storage.login = isLoggedIn;
+            BankApp.storage.roleLevel = userRoleLevel;
+            
             this.pageController.loadHtmlComponentInSection("nav",this.navCard);
             this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1> <span class='greeting'>Hallo "+BankApp.storage.username+"</span>");
             this.mainNavigation.onNavigate();
 
         },()=>{
             this.logger.error("WhoAmI Request Faild. Can't load App!","Initialize");
+            this.pageController.loadHtmlComponentInSection("c_body","<h1>App couldn't be loaded</h1>");
         });
        
     }

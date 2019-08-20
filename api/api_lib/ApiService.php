@@ -273,24 +273,37 @@ class ApiService
     }
 
 
-
+    /**
+     * Actual doing the request
+     *
+     * @return void
+     */
     private function run()
     {
-
+        //get the needed controller
+        //@todo Fixed controller, create controller factory if necessary
         $apiCtrl = $this->apiControllers["entity"] ?? null;
+
         if ($apiCtrl == null) {
+            //no controller is found
             $this->setState(HttpResponseCodes::NotFound);
             return;
         }
 
+        //inject the context
         $apiCtrl->setContext($this);
+        
+        //the apictrl handles if the request has the permission
         if (!$apiCtrl->hasPermission()) {
             $this->createMessageResponse(false, "You haven't the permissions to do this action");
             $this->setState(HttpResponseCodes::Unauthorized);
             return;
         }
+
+        //run the right method for the call
         switch ($this->apiRequest->method) {
             case 'GET':
+                //decide between geting a specific record or "all" records
                 if ($this->apiRequest->requestedId != null) {
                     $this->response = $apiCtrl->getById($this->apiRequest->requestedId, $this->apiRequest->params);
                 } else {
@@ -301,12 +314,12 @@ class ApiService
                 $this->response = $apiCtrl->update($this->apiRequest->requestedId, $this->apiRequest->input);
                 break;
             case 'POST':
+                //decide between creating a record or call an action
                 if ($this->apiRequest->action != null) {
                     $this->response = $apiCtrl->invokeAction($this->apiRequest->action, $this->apiRequest->requestedId, $this->apiRequest->input);
                 } else {
                     $this->response = $apiCtrl->create($this->apiRequest->input);
                 }
-
                 break;
             case 'DELETE':
                 $this->response = $apiCtrl->delete($this->apiRequest->requestedId, $this->apiRequest->input);
@@ -319,6 +332,17 @@ class ApiService
     }
     /* #endregion */
     /* #region  HELPER */
+    /**
+     * Create a generic Message request
+     *
+     * 
+     * 
+     * @param bool $success
+     * @param string $message
+     * @param string $exception
+     * @param object $data
+     * @return void
+     */
     private function createMessageResponse($success, $message, $exception = null, $data = null)
     {
 
@@ -330,6 +354,11 @@ class ApiService
         $this->response = $msg;
     }
 
+    /**
+     * just a debugging function to show the current request
+     *
+     * @return void
+     */
     public function printRequest()
     {
         $msg = new ApiMessageResponse();

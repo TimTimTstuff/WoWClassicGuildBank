@@ -6,3 +6,4 @@ WebApp for managing the Guild bank
 
 ## old version
     For the old version check the old_version branch
+

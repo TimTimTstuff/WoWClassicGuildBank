@@ -1,19 +1,23 @@
 <?php
 
-class RegisterActionResult{
+/* #region  Result Objects */
+class RegisterActionResult
+{
     public $success = false;
     public $message = "";
     public $code = 0;
 }
 
-class LoginActionResult{
+class LoginActionResult
+{
     public $success = false;
     public $token = null;
     public $message = "";
     public $code = 0;
 }
 
-class WhoAmIResult{
+class WhoAmIResult
+{
     public $success = false;
     public $name;
     public $id;
@@ -21,68 +25,107 @@ class WhoAmIResult{
     public $loggedIn = false;
 }
 
-class Model_User extends ApiBaseEntityModel{
-    
-   private $isCreateRequest = false;
+/* #endregion */
+class Model_User extends ApiBaseEntityModel
+{
 
-   private function maskExportFields(){
-       $this->bean->password = null;
-       $this->bean->token = null;
-       $this->bean->tokenExpires = null;
-   }
+    private $isCreateRequest = false;
 
-   private function maskNotAdminFields(){
-        if($this->bean->getID() == $this->getUserId())return;
+    /**
+     * Remove specific fields from the export (security) 
+     *
+     * @return void
+     */
+    private function maskExportFields()
+    {
+        $this->bean->password = null;
+        $this->bean->token = null;
+        $this->bean->tokenExpires = null;
+    }
+
+    /**
+     * Remove fields for non admins (privacy)
+     *
+     * @return void
+     */
+    private function maskNotAdminFields()
+    {
+        if ($this->bean->getID() == $this->getUserId()) return;
         $this->bean->email = null;
         $this->bean->modified_on = null;
         $this->bean->modified_by = null;
-   }
-   
-   public function hasPermissions(){
-    $request = $this->api->getRequest();
-    if($this->hasUserLevel(RoleLevel::ADMIN))return true;
-    if(in_array($request->action,["login","registeruser","whoami"]))return true;
-    
-    if($this->hasUserLevel(RoleLevel::MEMBER))return true;
-    
-    return false;
     }
 
+    public function hasPermissions()
+    {
+        $request = $this->api->getRequest();
+        if ($this->hasUserLevel(RoleLevel::ADMIN)) return true;
+        if (in_array($request->action, ["login", "registeruser", "whoami"])) return true;
 
-    public function update(){
-        if($this->isCreate()){
+        if ($this->hasUserLevel(RoleLevel::MEMBER)) return true;
+
+        return false;
+    }
+
+    /* #region  Hooks */
+
+    /**
+     * RBphp Triggered before update
+     *
+     * @return void
+     */
+    public function update()
+    {
+        if ($this->isCreate()) {
             $this->isCreateRequest = true;
             $this->bean->roleLevel = 1;
-        }else{
-            
-        }
-       
+        } else { }
     }
 
-    public function after_update(){
-        if($this->isCreateRequest){
+    /**
+     * RBphp triggered after the update
+     *
+     * @return void
+     */
+    public function after_update()
+    {
+        if ($this->isCreateRequest) {
             $this->isCreateRequest = false;
-            $this->setSystemData($this->bean,$this->bean->getID());
+            $this->setSystemData($this->bean, $this->bean->getID());
             R::store($this->bean);
         }
     }
 
-    public function open(){
-       if($this->api->getRequest()->method == "GET"){
-           $this->maskExportFields();
-           if(!$this->hasUserLevel(RoleLevel::OFFICER)){
-              $this->maskNotAdminFields();
-           }
-           
-       }
+    /**
+     * RBphp triggered after geting a single record
+     *
+     * @return void
+     */
+    public function open()
+    {
+        if ($this->api->getRequest()->method == "GET") {
+            $this->maskExportFields();
+            if (!$this->hasUserLevel(RoleLevel::OFFICER)) {
+                $this->maskNotAdminFields();
+            }
+        }
     }
+    /* #endregion */
 
-    public function action_registerUser(){
+    /* #region  Custom Actions */
+
+    /**
+     * Custom Action
+     *
+     * @return void
+     */
+    public function action_registerUser()
+    {
         $this->bean->import($this->api->getRequest()->input);
-        $userExists = R::count($this->api->getRequest()->baseEntity,"username = :username or email = :email",["username"=>$this->bean->username,"email"=>$this->bean->email]);
+        $userExists = R::count($this->api->getRequest()->baseEntity, "username = :username or email = :email", ["username" => $this->bean->username, "email" => $this->bean->email]);
         $result = new RegisterActionResult();
-        
-        if($userExists > 0) {
+
+        if ($userExists > 0) {
             $result->code = 1;
             $result->message = "User with name or email exists";
             $result->success = false;
@@ -96,28 +139,40 @@ class Model_User extends ApiBaseEntityModel{
         $result->success = true;
         return $result;
     }
-    
-    public function action_whoami(){
-        
-        $b = R::load($this->api->getRequest()->baseEntity,$this->api->getSession()->getUserId());
+
+    /**
+     * Custom Action
+     *
+     * @return void
+     */
+    public function action_whoami()
+    {
+
+        $b = R::load($this->api->getRequest()->baseEntity, $this->api->getSession()->getUserId());
         $hasId = $this->api->getSession()->getUserId() != null;
         $result = new WhoAmIResult();
-        $result->id = $hasId!=null?$b->getID():0;
-        $result->level = $hasId!=null?$b->roleLevel:RoleLevel::GUEST;
-        $result->name = $hasId!=null?$b->username:"Gast";
+        $result->id = $hasId != null ? $b->getID() : 0;
+        $result->level = $hasId != null ? $b->roleLevel : RoleLevel::GUEST;
+        $result->name = $hasId != null ? $b->username : "Gast";
         $result->success = true;
-        $result->loggedIn = $hasId!=null;
+        $result->loggedIn = $hasId != null;
         return $result;
     }
 
-    public function action_login(){
+    /**
+     * Custom Action
+     *
+     * @return void
+     */
+    public function action_login()
+    {
         $this->bean->import($this->api->getRequest()->input);
         $password = sha1($this->bean->password);
-        $exists = R::findOne($this->api->getRequest()->baseEntity,"username = :username and password = :password",["username"=>$this->bean->username,"password"=>$password]);
+        $exists = R::findOne($this->api->getRequest()->baseEntity, "username = :username and password = :password", ["username" => $this->bean->username, "password" => $password]);
 
         $result = new LoginActionResult();
 
-        if($exists != null){
+        if ($exists != null) {
             $exists->token = md5(uniqid(rand(), true));
             $startDate = time();
             $exists->tokenExpires =  date('Y-m-d H:i:s', strtotime('+5 day', $startDate));
@@ -135,4 +190,5 @@ class Model_User extends ApiBaseEntityModel{
         $result->token = null;
         return $result;
     }
+    /* #endregion */
 }

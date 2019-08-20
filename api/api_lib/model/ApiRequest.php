@@ -89,6 +89,7 @@ class ApiRequest
         $api->requestedId = isset($pathArr[1]) && is_numeric($pathArr[1]) ? $pathArr[1] : null;
         $api->action = isset($pathArr[1]) && !is_numeric($pathArr[1]) ? $pathArr[1] : (isset($pathArr[2]) ? $pathArr[2] : null);
         $api->input = $data;
+        //Apache specific method to get headers / custom headers
         $api->authKey = apache_request_headers()[$authHeaderKey] ?? null;
 
         return $api;
