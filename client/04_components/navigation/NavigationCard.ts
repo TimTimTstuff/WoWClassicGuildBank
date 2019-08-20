@@ -17,7 +17,7 @@ class NavigationCard extends HtmlComponent{
     public setActive(name:string){
 
        this.navigationItems.forEach(n=>{
-            this.log.debug(`Call navigate for: ${n.getName()}`); 
+        
            n.setActive(n.getName()==name);
        });
     }

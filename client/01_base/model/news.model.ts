@@ -1,22 +1,19 @@
-interface NewsRecord{
-    id:number;
-    title:string;
-    text:string;
-    author:string;
-    createdOn:Date;
-    category:string;
+
+ interface NewsRecord {
+    id:              number;
+    title:           string;
+    news_text:       string;
+    category:        string;
+    created_by:      string;
+    created_on:      string;
+    modified_by:     string;
+    modified_on:     string;
+    status:          number;
+    owner:           number;
+    publicpost:number;
+    owner_ref:       Ref;
+    created_by_ref:  Ref;
+    modified_by_ref: Ref;
 }
 
 
-interface NewsModel {
-   id:          number;
-   title:       string;
-   news_text:   string;
-   category:    string;
-   created_by:  string;
-   created_on:  string;
-   modified_by: number;
-   modified_on: string;
-   status:      number;
-   owner:       number;
-}

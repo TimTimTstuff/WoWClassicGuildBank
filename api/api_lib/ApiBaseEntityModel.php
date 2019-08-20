@@ -37,6 +37,8 @@ class ApiBaseEntityModel extends RedBean_SimpleModel{
         ];
     }
 
+   
+
     public function setSystemData(RedBeanPHP\OODBBean $bean,$userId){
         if(!isset($bean->createdBy))
             $bean->createdBy = $userId;

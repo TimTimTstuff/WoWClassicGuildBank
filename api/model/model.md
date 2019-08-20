@@ -12,7 +12,7 @@ Requred Filename:  {entity}.model.php
 For CRUD exists an extra Pre and Post Action. This actions are called before or after a Bean is stored. 
 Methods in the model will be called when they exist. 
 
-BUT: this methods are not called from the current $bean, for this calls a empty bean is created, so you have to use the $context parameter. 
+BUT: this methods are not called from the current $bean, for this calls a empty bean is created, so you have to use the $arg parameter. 
 
 - preGet [param:array]
 - postGet [result:entity]

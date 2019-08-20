@@ -37,7 +37,7 @@ class BankApp{
             BankApp.storage.roleLevel = l;
 
             this.pageController.loadHtmlComponentInSection("nav",this.navCard);
-            this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1>");
+            this.pageController.loadHtmlComponentInSection("head","<h1> Wow Guild Bank </h1> <span class='greeting'>Hallo "+BankApp.storage.username+"</span>");
             this.mainNavigation.onNavigate();
 
         },()=>{
@@ -50,6 +50,7 @@ class BankApp{
         this.mainNavigation.registerRoute([
             new RouteSet("main","Home",null,10)
             .addSection("c_head","<h2>Home</h2>")
+            .addSection("c_body",new NewsViewCard(this.services))
             .setIsVisibleCheck(()=>{
                 return true;
             }),
@@ -74,7 +75,14 @@ class BankApp{
             }),
 
             new RouteSet("admin","Admin",null,40)
-            .addSection("c_head","<h2>admin</h2>")
+            .addSection("c_head","<h2>Admin</h2>")
+            .addSection("c_body",new AdminCard())
+            .setIsVisibleCheck(()=>{
+                return BankApp.storage.isLoggedIn() && BankApp.storage.roleLevel >= 3
+            }),
+            new RouteSet("editpostlist","News Edit","admin",40)
+            .addSection("c_head","<h2>News Edit</h2>")
+            .addSection("c_body",new NewsEditCard(this.services))
             .setIsVisibleCheck(()=>{
                 return BankApp.storage.isLoggedIn() && BankApp.storage.roleLevel >= 3
             }),

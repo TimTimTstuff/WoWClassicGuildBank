@@ -1,4 +1,4 @@
-interface UserModel extends BaseModel {
+interface UserModel {
     username:string;
     password:string;
     email:string;

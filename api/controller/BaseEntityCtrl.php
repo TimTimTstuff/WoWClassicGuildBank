@@ -49,18 +49,19 @@ class BaseEntityCtrl implements ApiBaseCtrl{
 
     function get($param){
 
-        $this->prePostModel->preGet(["param"=>$param]);
-        $bindings = ["limit"=>$this->getLimitOrDefault($param),"offset"=>$this->getOffsetOrDefault($param)];
+       $resultArg = $this->prePostModel->preGet(["param"=>$param]);
+       if($resultArg != null){
+           $param = $resultArg['param'];
+       }
+       $bindings = ["limit"=>$this->getLimitOrDefault($param),"offset"=>$this->getOffsetOrDefault($param)];
         $order = $this->addOrdering($param);
         $filter = $this->generateFilter($param);
-        $query = "status = 1 $filter order by $order limit :limit offset :offset";
+        $query = "state = 1 $filter order by $order limit :limit offset :offset";
         //echo $query;
         $result = R::find($this->getEntityName(),$query,$bindings);
 
         $this->prePostModel->postGet(["result"=>$result]);
-
-
-        return $result;
+        return array_values($result);
     }
 
     function getById($id,$param){
@@ -73,6 +74,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
 
     function update($id, $data){
         $bean = R::findOne($this->getEntityName(),"status = 1 and id = ?",[$id]);
+        
         $bean->import($data);
 
         $this->prePostModel->preUpdate(["id"=>$id,"data"=>$data,"pre"=>$bean]);
@@ -88,7 +90,7 @@ class BaseEntityCtrl implements ApiBaseCtrl{
     function delete($id){
         //R::trash(R::findOne($this->getEntityName(),"id = ?",[$id]));
         $b = R::findOne($this->getEntityName(),"status = 1 and id = ?",[$id]);
-
+      
         $this->prePostModel->preDelete(["id"=>$id,"pre"=>$b]);
 
         $b->state = 0;
@@ -119,13 +121,13 @@ class BaseEntityCtrl implements ApiBaseCtrl{
             $bean = R::dispense($this->getEntityName());
         }
         $model = R::dispense($this->getEntityName());
-        $model->preAction($action,$id,$data,$bean);
+     
         $beanModel = $bean->box();
         $methodName = "action_".$action;
         if(method_exists($beanModel,$methodName)){
            return $bean->$methodName();
            $model = R::dispense($this->getEntityName());
-           $model->postAction($action,$id,$data,$bean);
+        
         }
         
       

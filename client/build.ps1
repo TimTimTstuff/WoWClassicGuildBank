@@ -15,7 +15,7 @@ $styleFolder = "..\dist\style\";
 $imgFolder = "..\dist\";
 
 
-
+Write-Host $test
 
 ## Build Script 
 Write-Host "Start Build"
@@ -44,26 +44,26 @@ foreach ($item in $folder) {
      tsc -p $buildFolder 
 
      #copy style files if they exist
-     if(Test-Path $localStyleFolder){
+     if((Test-Path $localStyleFolder) -and ($build -eq ".prod")){
           Write-Host "Has Style Path"
           Copy-Item "$($localStyleFolder)\*" -Destination $styleFolder -Recurse 
      }
 
      #copy img files if they exist
-     if(Test-Path $localImgFolder){
+     if((Test-Path $localImgFolder)  -and ($build -eq ".prod")){
           
           Write-Host "Has Img Path"
           Copy-Item "$($localImgFolder)\" -Destination $imgFolder -Container -Recurse -Force 
      }
 
       #copy main html
-      if(Test-Path "$($location.Path)/$($item)/main.html"){
+      if((Test-Path "$($location.Path)/$($item)/main.html")  -and ($build -eq ".prod")){
           Write-Host "Has main html"
           Copy-Item "$($location.Path)/$($item)/main.html" -Destination "..\dist\index.html"  -Recurse 
      }
 
      #revert tsconfig changes
-     if("" -ne $build){
+     if("" -ne $build ){
           Copy-Item "$($item)\tsconfig$($defaultBuild).json" -Destination "$($item)\tsconfig.json"
      }
 }
